@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>WUP — Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E57711;--orange-dark:#c96510;--orange-light:#fdf1e4;
+  --green:#31B15C;--green-dark:#279a4f;--green-light:#d1fae5;
+  --red:#e53e3e;--red-light:#fee2e2;
+  --blue:#3b82f6;--purple:#8b5cf6;--teal:#06b6d4;--pink:#ec4899;
+  --gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;
+  --gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;
+  --gray-800:#1f2937;--gray-900:#111827;
+  --radius-sm:8px;--radius:12px;--radius-lg:16px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
+  --shadow:0 4px 16px rgba(0,0,0,.10);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.14);
+}
+body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh}
+
+/* Header */
+.header{background:linear-gradient(135deg,var(--gray-900) 0%,#1f2937 100%);padding:16px 20px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.logo{color:#fff;font-size:24px;font-weight:800;letter-spacing:2px}
+.logo-sub{color:rgba(255,255,255,.6);font-size:11px;letter-spacing:.5px;text-transform:uppercase}
+.header-title{color:#fff;font-size:15px;font-weight:600;margin-left:auto;opacity:.9;display:flex;align-items:center;gap:8px}
+.header-badge{background:var(--orange);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase}
+
+/* Filter bar */
+.filter-bar{background:#fff;border-bottom:1px solid var(--gray-200);padding:12px 20px;position:sticky;top:64px;z-index:90;box-shadow:var(--shadow-sm)}
+.filter-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.day-btn{padding:7px 16px;border:2px solid var(--gray-300);border-radius:var(--radius-sm);background:#fff;color:var(--gray-600);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}
+.day-btn:hover{border-color:var(--orange);color:var(--orange)}
+.day-btn.active{background:var(--orange);border-color:var(--orange);color:#fff}
+.filter-label{font-size:12px;color:var(--gray-500);font-weight:500;margin-left:4px}
+.refresh-btn{margin-left:auto;padding:7px 14px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);background:var(--gray-50);color:var(--gray-600);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;transition:all .15s}
+.refresh-btn:hover{border-color:var(--orange);color:var(--orange)}
+
+/* Content */
+.content{max-width:1100px;margin:0 auto;padding:20px}
+
+/* KPI strip */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.kpi-card{background:#fff;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200)}
+.kpi-label{font-size:11px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.kpi-value{font-size:28px;font-weight:800;line-height:1}
+.kpi-sub{font-size:12px;color:var(--gray-400);margin-top:4px}
+.kpi-value.orange{color:var(--orange)}
+.kpi-value.green{color:var(--green)}
+.kpi-value.red{color:var(--red)}
+.kpi-value.blue{color:var(--blue)}
+.kpi-value.purple{color:var(--purple)}
+
+/* Charts grid */
+.charts-row{display:grid;gap:16px;margin-bottom:16px}
+.charts-row-2{grid-template-columns:1fr 1fr}
+.charts-row-3{grid-template-columns:2fr 1fr}
+.chart-card{background:#fff;border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200)}
+.chart-title{font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:4px}
+.chart-sub{font-size:12px;color:var(--gray-400);margin-bottom:16px}
+.chart-wrap{position:relative}
+
+/* Coach table */
+.table-card{background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);overflow:hidden;margin-bottom:20px}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.table-title{font-size:14px;font-weight:700;color:var(--gray-800)}
+.table-search{padding:7px 12px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;color:var(--gray-700);outline:none;min-width:200px}
+.table-search:focus{border-color:var(--orange)}
+.sort-select{padding:7px 12px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;color:var(--gray-700);cursor:pointer}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;background:var(--gray-50);border-bottom:1px solid var(--gray-200);white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{color:var(--orange)}
+thead th .sort-icon{margin-left:4px;opacity:.4}
+thead th.sorted .sort-icon{opacity:1;color:var(--orange)}
+tbody tr{border-bottom:1px solid var(--gray-100);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--gray-50)}
+tbody td{padding:12px 16px;font-size:13px;color:var(--gray-700)}
+.rank-badge{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
+.rank-1{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.rank-2{background:linear-gradient(135deg,#94a3b8,#64748b)}
+.rank-3{background:linear-gradient(135deg,#cd7c45,#b45309)}
+.rank-other{background:var(--gray-300);color:var(--gray-600)}
+.coach-name-cell{font-weight:600;color:var(--gray-900)}
+.cat-tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.cat-trading{background:#dbeafe;color:#1e40af}
+.cat-immobiliare{background:#d1fae5;color:#065f46}
+.cat-business{background:#ede9fe;color:#5b21b6}
+.cat-mindset{background:#fce7f3;color:#9d174d}
+.progress-bar{height:6px;background:var(--gray-100);border-radius:3px;margin-top:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:var(--orange);transition:width .3s}
+.progress-fill.green{background:var(--green)}
+.num-cell{font-weight:700;font-size:14px}
+.num-cell.green{color:var(--green)}
+.num-cell.red{color:var(--red)}
+.num-cell.orange{color:var(--orange)}
+.rate-cell{font-size:12px;color:var(--gray-500)}
+
+/* Loading / Error / Empty */
+.loading{text-align:center;padding:60px 20px}
+.spinner{width:40px;height:40px;border:3px solid var(--gray-200);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.error-card{background:#fff;border-radius:var(--radius-lg);padding:40px 32px;text-align:center;max-width:380px;box-shadow:var(--shadow-lg)}
+.error-card h2{color:var(--red);margin:12px 0 8px;font-size:20px}
+.empty-state{text-align:center;padding:40px;color:var(--gray-400)}
+
+/* Tooltip-like tag */
+.insight-bar{background:linear-gradient(135deg,var(--orange-light),#fff);border:1px solid #fdddb6;border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;font-size:13px;color:#7a4a10;display:flex;align-items:center;gap:8px}
+.insight-bar svg{flex-shrink:0;color:var(--orange)}
+
+@media(max-width:768px){
+  .charts-row-2,.charts-row-3{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:repeat(3,1fr)}
+  .table-header{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:480px){
+  .kpi-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="error-screen" class="error-screen" style="display:none">
+  <div class="error-card">
+    <div style="font-size:48px">🔒</div>
+    <h2>Accesso negato</h2>
+    <p style="color:var(--gray-500);font-size:14px">Token non valido. Contatta l'amministratore.</p>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+
+  <header class="header">
+    <div class="header-inner">
+      <div>
+        <div class="logo">WUP</div>
+        <div class="logo-sub">Coach Booking Platform</div>
+      </div>
+      <div class="header-title">
+        <span class="header-badge">Analytics</span>
+        Dashboard Analitica
+      </div>
+    </div>
+  </header>
+
+  <div class="filter-bar">
+    <div class="filter-inner">
+      <span class="filter-label">Filtra per giorno:</span>
+      <button class="day-btn active" data-date="all" onclick="setDay(this,'all')">Tutti</button>
+      <button class="day-btn" data-date="2026-03-13" onclick="setDay(this,'2026-03-13')">Ven 13 Mar</button>
+      <button class="day-btn" data-date="2026-03-14" onclick="setDay(this,'2026-03-14')">Sab 14 Mar</button>
+      <button class="day-btn" data-date="2026-03-15" onclick="setDay(this,'2026-03-15')">Dom 15 Mar</button>
+      <button class="refresh-btn" onclick="reload()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.96"/></svg>
+        Aggiorna
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div id="alert-area"></div>
+
+    <div id="loading-area" class="loading">
+      <div class="spinner"></div>
+      <div style="color:var(--gray-400);font-size:14px">Caricamento dati…</div>
+    </div>
+
+    <div id="dashboard" style="display:none">
+
+      <!-- Insight dinamico -->
+      <div id="insight-bar" class="insight-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="insight-text"></span>
+      </div>
+
+      <!-- KPI -->
+      <div class="kpi-grid" id="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Totale prenotazioni</div><div class="kpi-value orange" id="kpi-total">—</div><div class="kpi-sub">confermati + cancellati</div></div>
+        <div class="kpi-card"><div class="kpi-label">Confermati</div><div class="kpi-value green" id="kpi-confirmed">—</div><div class="kpi-sub" id="kpi-confirmed-sub"></div></div>
+        <div class="kpi-card"><div class="kpi-label">Cancellati</div><div class="kpi-value red" id="kpi-cancelled">—</div><div class="kpi-sub" id="kpi-cancelled-sub"></div></div>
+        <div class="kpi-card"><div class="kpi-label">Ore sessioni</div><div class="kpi-value blue" id="kpi-hours">—</div><div class="kpi-sub">@ 20 min/sessione</div></div>
+        <div class="kpi-card"><div class="kpi-label">Coach attivi</div><div class="kpi-value purple" id="kpi-coaches">—</div><div class="kpi-sub">con almeno 1 prenotazione</div></div>
+        <div class="kpi-card"><div class="kpi-label">Tasso cancellazione</div><div class="kpi-value" id="kpi-cancel-rate" style="color:var(--gray-700)">—</div><div class="kpi-sub">sul totale prenotazioni</div></div>
+      </div>
+
+      <!-- Grafici riga 1 -->
+      <div class="charts-row charts-row-3">
+        <div class="chart-card">
+          <div class="chart-title">Prenotazioni per coach</div>
+          <div class="chart-sub">Confermati — ordinati per volume</div>
+          <div class="chart-wrap"><canvas id="chart-coaches" height="280"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Distribuzione per categoria</div>
+          <div class="chart-sub">Confermati per area</div>
+          <div class="chart-wrap" style="max-height:280px;display:flex;align-items:center;justify-content:center"><canvas id="chart-category"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Grafici riga 2 -->
+      <div class="charts-row charts-row-2">
+        <div class="chart-card">
+          <div class="chart-title">Distribuzione oraria</div>
+          <div class="chart-sub">Fasce orarie più richieste (confermati)</div>
+          <div class="chart-wrap"><canvas id="chart-hours" height="200"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Prenotazioni per giorno</div>
+          <div class="chart-sub">Confermati vs Cancellati per data</div>
+          <div class="chart-wrap"><canvas id="chart-days" height="200"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Tabella coach -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Dettaglio per coach</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input class="table-search" type="text" placeholder="Cerca coach…" oninput="filterTable(this.value)" id="table-search">
+            <select class="sort-select" onchange="sortTable(this.value)" id="sort-select">
+              <option value="confirmed-desc">Ordina: più prenotati</option>
+              <option value="confirmed-asc">Ordina: meno prenotati</option>
+              <option value="hours-desc">Ordina: più ore</option>
+              <option value="rate-desc">Ordina: più cancellazioni</option>
+              <option value="name-asc">Ordina: A→Z</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px">#</th>
+                <th>Coach</th>
+                <th>Categoria</th>
+                <th onclick="sortTable('confirmed-desc')" style="cursor:pointer">Confermati <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('cancelled-desc')" style="cursor:pointer">Cancellati <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('hours-desc')" style="cursor:pointer">Ore tot. <span class="sort-icon">↕</span></th>
+                <th>% sul totale</th>
+                <th onclick="sortTable('rate-desc')" style="cursor:pointer">Tasso canc. <span class="sort-icon">↕</span></th>
+              </tr>
+            </thead>
+            <tbody id="coach-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /dashboard -->
+  </div>
+</div>
+
+<script>
+(function(){
+  const API_URL = 'https://script.google.com/macros/s/AKfycbyRPpzCcN0h2kMyg6xKVMJroRZwQqYyxXtGmuaqtHh8BCVVQbHvT6DKjzJs0HrqFtyv/exec';
+
+  // Mappa statica coach_id → categoria
+  const COACH_CATEGORY = {
+    'coach_001':'Trading','coach_002':'Immobiliare','coach_003':'Trading',
+    'coach_004':'Trading','coach_005':'Trading','coach_006':'Immobiliare',
+    'coach_007':'Trading','coach_009':'Business','coach_010':'Business',
+    'coach_011':'Trading','coach_013':'Trading','coach_014':'Trading',
+    'coach_015':'Mindset','coach_017':'Immobiliare','coach_018':'Business',
+    'coach_024':'Trading','coach_025':'Trading','coach_026':'Immobiliare',
+    'coach_027':'Trading','coach_028':'Mindset','coach_029':'Business'
+  };
+  const CAT_COLORS = {
+    'Trading':'#3b82f6','Immobiliare':'#31B15C','Business':'#8b5cf6','Mindset':'#ec4899'
+  };
+  const CAT_CLASS = {
+    'Trading':'cat-trading','Immobiliare':'cat-immobiliare','Business':'cat-business','Mindset':'cat-mindset'
+  };
+
+  let adminToken = '';
+  let allBookings = [];
+  let currentDay = 'all';
+  let tableData = [];
+  let charts = {};
+
+  // ── Init ─────────────────────────────────────────────────────────────────
+  function init() {
+    const p = new URLSearchParams(window.location.search);
+    adminToken = p.get('token') || sessionStorage.getItem('wup_admin_token') || '';
+    if (!adminToken) { showError(); return; }
+    sessionStorage.setItem('wup_admin_token', adminToken);
+    document.getElementById('app').style.display = 'block';
+    load();
+  }
+
+  function showError() { document.getElementById('error-screen').style.display = 'flex'; }
+
+  // ── Load ──────────────────────────────────────────────────────────────────
+  async function load() {
+    document.getElementById('loading-area').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+    try {
+      const res = await fetch(API_URL + '?action=getAdminBookings&admin_token=' + encodeURIComponent(adminToken));
+      const json = await res.json();
+      if (!json.success) {
+        if (json.code === 'UNAUTHORIZED') { showError(); return; }
+        showAlert('Errore: ' + json.error); return;
+      }
+      allBookings = json.data.bookings || [];
+      document.getElementById('loading-area').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      render();
+    } catch(e) {
+      showAlert('Errore di rete. Ricarica la pagina.');
+      document.getElementById('loading-area').style.display = 'none';
+    }
+  }
+
+  window.reload = load;
+
+  // ── Day filter ────────────────────────────────────────────────────────────
+  window.setDay = function(btn, date) {
+    document.querySelectorAll('.day-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentDay = date;
+    render();
+  };
+
+  function getFiltered() {
+    if (currentDay === 'all') return allBookings;
+    return allBookings.filter(function(b){ return b.start_datetime.startsWith(currentDay); });
+  }
+
+  // ── Main render ───────────────────────────────────────────────────────────
+  function render() {
+    const data = getFiltered();
+    const confirmed = data.filter(function(b){ return b.status === 'CONFIRMED'; });
+    const cancelled = data.filter(function(b){ return b.status === 'CANCELLED'; });
+
+    renderKPIs(confirmed, cancelled);
+    renderInsight(confirmed, cancelled);
+    renderCoachChart(confirmed);
+    renderCategoryChart(confirmed);
+    renderHourChart(confirmed);
+    renderDayChart();
+    buildTableData(confirmed, cancelled);
+    renderTable();
+  }
+
+  // ── KPIs ──────────────────────────────────────────────────────────────────
+  function renderKPIs(confirmed, cancelled) {
+    const total = confirmed.length + cancelled.length;
+    const hours = (confirmed.length * 20 / 60).toFixed(1);
+    const coaches = new Set(confirmed.map(function(b){ return b.coach_id; })).size;
+    const rate = total > 0 ? Math.round(cancelled.length / total * 100) : 0;
+
+    setText('kpi-total', total);
+    setText('kpi-confirmed', confirmed.length);
+    setText('kpi-confirmed-sub', total > 0 ? Math.round(confirmed.length/total*100) + '% del totale' : '');
+    setText('kpi-cancelled', cancelled.length);
+    setText('kpi-cancelled-sub', total > 0 ? Math.round(cancelled.length/total*100) + '% del totale' : '');
+    setText('kpi-hours', hours + 'h');
+    setText('kpi-coaches', coaches);
+    setText('kpi-cancel-rate', rate + '%');
+    document.getElementById('kpi-cancel-rate').style.color = rate > 20 ? 'var(--red)' : rate > 10 ? 'var(--orange)' : 'var(--green)';
+  }
+
+  // ── Insight ───────────────────────────────────────────────────────────────
+  function renderInsight(confirmed, cancelled) {
+    if (!confirmed.length) { setText('insight-text', 'Nessun dato disponibile per il periodo selezionato.'); return; }
+
+    const coachCount = {};
+    confirmed.forEach(function(b){
+      coachCount[b.coach_name] = (coachCount[b.coach_name] || 0) + 1;
+    });
+    const top = Object.entries(coachCount).sort(function(a,b){ return b[1]-a[1]; })[0];
+
+    const hourCount = {};
+    confirmed.forEach(function(b){
+      const h = new Date(b.start_datetime).getHours();
+      hourCount[h] = (hourCount[h] || 0) + 1;
+    });
+    const topH = Object.entries(hourCount).sort(function(a,b){ return b[1]-a[1]; })[0];
+    const fasciaOra = topH ? 'Le ' + topH[0] + ':00' : '';
+
+    setText('insight-text',
+      '🏆 Coach più richiesto: ' + (top ? top[0] + ' (' + top[1] + ' sessioni)' : '—') +
+      ' · ⏰ Fascia oraria più prenotata: ' + (fasciaOra || '—') +
+      ' · 📊 Media sessioni per coach: ' + (confirmed.length / Math.max(1, new Set(confirmed.map(function(b){return b.coach_id;})).size)).toFixed(1)
+    );
+  }
+
+  // ── Coach bar chart ───────────────────────────────────────────────────────
+  function renderCoachChart(confirmed) {
+    const counts = {};
+    confirmed.forEach(function(b){ counts[b.coach_name] = (counts[b.coach_name]||0)+1; });
+    const sorted = Object.entries(counts).sort(function(a,b){ return b[1]-a[1]; });
+    const labels = sorted.map(function(e){ return e[0].split(' ').pop(); }); // cognome
+    const values = sorted.map(function(e){ return e[1]; });
+    const colors = sorted.map(function(e){
+      // trova coach_id dal nome
+      const found = confirmed.find(function(b){ return b.coach_name === e[0]; });
+      const cat = found ? (COACH_CATEGORY[found.coach_id] || 'Trading') : 'Trading';
+      return CAT_COLORS[cat] || CAT_COLORS.Trading;
+    });
+
+    destroyChart('chart-coaches');
+    charts['chart-coaches'] = new Chart(document.getElementById('chart-coaches'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          backgroundColor: colors.map(function(c){ return c + 'cc'; }),
+          borderColor: colors,
+          borderWidth: 2,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter', size: 11 } }, grid: { color: '#f3f4f6' } },
+          x: { ticks: { font: { family: 'Inter', size: 11 }, maxRotation: 45 }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // ── Category doughnut ─────────────────────────────────────────────────────
+  function renderCategoryChart(confirmed) {
+    const counts = { Trading:0, Immobiliare:0, Business:0, Mindset:0 };
+    confirmed.forEach(function(b){
+      const cat = COACH_CATEGORY[b.coach_id] || 'Trading';
+      counts[cat] = (counts[cat]||0)+1;
+    });
+    const labels = Object.keys(counts).filter(function(k){ return counts[k]>0; });
+    const values = labels.map(function(k){ return counts[k]; });
+    const colors = labels.map(function(k){ return CAT_COLORS[k]; });
+
+    destroyChart('chart-category');
+    charts['chart-category'] = new Chart(document.getElementById('chart-category'), {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          backgroundColor: colors.map(function(c){ return c+'cc'; }),
+          borderColor: colors,
+          borderWidth: 2,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '65%',
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12 }, padding: 12 } }
+        }
+      }
+    });
+  }
+
+  // ── Hourly chart ──────────────────────────────────────────────────────────
+  function renderHourChart(confirmed) {
+    const counts = {};
+    for (let h = 9; h < 18; h++) counts[h] = 0;
+    confirmed.forEach(function(b){
+      const h = new Date(b.start_datetime).getHours();
+      if (counts[h] !== undefined) counts[h]++;
+    });
+    const labels = Object.keys(counts).map(function(h){ return h + ':00'; });
+    const values = Object.values(counts);
+    const max = Math.max(...values);
+    const colors = values.map(function(v){ return v === max && max > 0 ? '#E57711cc' : '#3b82f6cc'; });
+
+    destroyChart('chart-hours');
+    charts['chart-hours'] = new Chart(document.getElementById('chart-hours'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Sessioni',
+          data: values,
+          backgroundColor: colors,
+          borderColor: colors.map(function(c){ return c.replace('cc',''); }),
+          borderWidth: 2,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter', size: 11 } }, grid: { color: '#f3f4f6' } },
+          x: { ticks: { font: { family: 'Inter', size: 11 } }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // ── Day chart ─────────────────────────────────────────────────────────────
+  function renderDayChart() {
+    const days = ['2026-03-13','2026-03-14','2026-03-15'];
+    const labels = ['Ven 13','Sab 14','Dom 15'];
+    const confirmed = days.map(function(d){
+      return allBookings.filter(function(b){ return b.status==='CONFIRMED' && b.start_datetime.startsWith(d); }).length;
+    });
+    const cancelled = days.map(function(d){
+      return allBookings.filter(function(b){ return b.status==='CANCELLED' && b.start_datetime.startsWith(d); }).length;
+    });
+
+    destroyChart('chart-days');
+    charts['chart-days'] = new Chart(document.getElementById('chart-days'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          { label: 'Confermati', data: confirmed, backgroundColor: '#31B15Ccc', borderColor: '#31B15C', borderWidth: 2, borderRadius: 4 },
+          { label: 'Cancellati', data: cancelled, backgroundColor: '#e53e3ecc', borderColor: '#e53e3e', borderWidth: 2, borderRadius: 4 }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { font: { family: 'Inter', size: 12 } } } },
+        scales: {
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter', size: 11 } }, grid: { color: '#f3f4f6' } },
+          x: { ticks: { font: { family: 'Inter', size: 12, weight: '600' } }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // ── Table ──────────────────────────────────────────────────────────────────
+  function buildTableData(confirmed, cancelled) {
+    const coachMap = {};
+
+    confirmed.forEach(function(b){
+      if (!coachMap[b.coach_id]) coachMap[b.coach_id] = { id:b.coach_id, name:b.coach_name, confirmed:0, cancelled:0 };
+      coachMap[b.coach_id].confirmed++;
+    });
+    cancelled.forEach(function(b){
+      if (!coachMap[b.coach_id]) coachMap[b.coach_id] = { id:b.coach_id, name:b.coach_name, confirmed:0, cancelled:0 };
+      coachMap[b.coach_id].cancelled++;
+    });
+
+    const totalConfirmed = confirmed.length;
+    tableData = Object.values(coachMap).map(function(c){
+      const total = c.confirmed + c.cancelled;
+      return {
+        id: c.id,
+        name: c.name,
+        category: COACH_CATEGORY[c.id] || 'Trading',
+        confirmed: c.confirmed,
+        cancelled: c.cancelled,
+        hours: +(c.confirmed * 20 / 60).toFixed(1),
+        pct: totalConfirmed > 0 ? Math.round(c.confirmed / totalConfirmed * 100) : 0,
+        cancelRate: total > 0 ? Math.round(c.cancelled / total * 100) : 0
+      };
+    });
+    sortTableData('confirmed-desc');
+  }
+
+  function sortTableData(key) {
+    tableData.sort(function(a,b){
+      switch(key){
+        case 'confirmed-desc': return b.confirmed - a.confirmed;
+        case 'confirmed-asc':  return a.confirmed - b.confirmed;
+        case 'cancelled-desc': return b.cancelled - a.cancelled;
+        case 'hours-desc':     return b.hours - a.hours;
+        case 'rate-desc':      return b.cancelRate - a.cancelRate;
+        case 'name-asc':       return a.name.localeCompare(b.name);
+        default: return 0;
+      }
+    });
+  }
+
+  window.sortTable = function(key) {
+    document.getElementById('sort-select').value = key;
+    sortTableData(key);
+    renderTable(document.getElementById('table-search').value);
+  };
+
+  window.filterTable = function(q) { renderTable(q); };
+
+  function renderTable(search) {
+    const q = (search || '').toLowerCase();
+    const maxConfirmed = Math.max(...tableData.map(function(r){ return r.confirmed; }), 1);
+    const tbody = document.getElementById('coach-tbody');
+
+    const rows = tableData.filter(function(r){ return r.name.toLowerCase().includes(q); });
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Nessun coach trovato</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = rows.map(function(r, i){
+      const rank = i + 1;
+      const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+      const pctBar = maxConfirmed > 0 ? Math.round(r.confirmed / maxConfirmed * 100) : 0;
+      const cancelColor = r.cancelRate > 20 ? 'red' : r.cancelRate > 10 ? 'orange' : 'green';
+
+      return '<tr>' +
+        '<td><span class="rank-badge ' + rankClass + '">' + rank + '</span></td>' +
+        '<td class="coach-name-cell">' + escHtml(r.name) + '</td>' +
+        '<td><span class="cat-tag ' + CAT_CLASS[r.category] + '">' + r.category + '</span></td>' +
+        '<td><div class="num-cell green">' + r.confirmed + '</div><div class="progress-bar"><div class="progress-fill green" style="width:' + pctBar + '%"></div></div></td>' +
+        '<td class="num-cell ' + (r.cancelled > 0 ? 'red' : '') + '">' + r.cancelled + '</td>' +
+        '<td class="num-cell blue" style="color:var(--blue)">' + r.hours + 'h</td>' +
+        '<td><div class="num-cell orange">' + r.pct + '%</div><div class="rate-cell">del totale confermati</div></td>' +
+        '<td class="num-cell ' + cancelColor + '">' + r.cancelRate + '%</td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function destroyChart(id) {
+    if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+  }
+  function setText(id, val) { document.getElementById(id).textContent = val; }
+  function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function showAlert(msg) {
+    document.getElementById('alert-area').innerHTML = '<div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:14px;color:#991b1b;font-weight:500">' + escHtml(msg) + '</div>';
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
