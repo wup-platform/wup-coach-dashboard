@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23E57711'/><text x='50' y='68' font-size='60' font-weight='bold' font-family='Arial' fill='white' text-anchor='middle'>W</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>WUP — I tuoi appuntamenti</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,6 +59,10 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
 .phone-icon{font-size:12px}
 .notes-text{font-size:12px;color:var(--gray-500);background:var(--gray-50);padding:6px 10px;border-radius:var(--radius-sm);margin-top:8px;border-left:3px solid var(--orange)}
 .no-phone{font-size:13px;color:var(--gray-400)}
+.sf-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+.sf-label{font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.sf-checkbox{width:16px;height:16px;accent-color:#31B15C;cursor:pointer}
+.sf-saving{font-size:11px;color:var(--gray-400);font-style:italic}
 
 /* Empty state */
 .empty{text-align:center;padding:48px 20px;color:var(--gray-400)}
@@ -243,6 +248,12 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
       ? '<a class="client-phone" href="tel:' + escHtml(b.client_phone) + '"><span class="phone-icon">📞</span>' + escHtml(b.client_phone) + '</a>'
       : '<span class="no-phone">Nessun telefono</span>';
     const notes = b.notes ? '<div class="notes-text">📝 ' + escHtml(b.notes) + '</div>' : '';
+    const sfChecked = (b.salesforce_opportunity || '').toUpperCase() === 'TRUE';
+    const sfRow = '<div class="sf-row">' +
+      '<span class="sf-label">Opportunità SF:</span>' +
+      '<input type="checkbox" class="sf-checkbox" ' + (sfChecked ? 'checked' : '') +
+      ' onchange="saveSalesforceFlag(\'' + escId(b.booking_id) + '\',this)">' +
+      '<span class="sf-saving" id="sf-saving-' + escId(b.booking_id) + '"></span></div>';
 
     return '<div class="booking-card">' +
       '<div class="card-top">' +
@@ -251,6 +262,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
       '<div class="client-name">' + escHtml(b.client_name + ' ' + b.client_surname) + '</div>' +
       '<div style="margin-top:4px">' + phone + '</div>' +
       notes +
+      sfRow +
       '</div>' +
       '</div>' +
       '</div>';
@@ -267,6 +279,25 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
     const el = document.getElementById('alert-area');
     el.innerHTML = '<div class="alert ' + type + '">' + escHtml(msg) + '</div>';
   }
+  function escId(s){ return String(s).replace(/[^a-zA-Z0-9_-]/g,''); }
+
+  window.saveSalesforceFlag = async function(bookingId, cb) {
+    const saving = document.getElementById('sf-saving-' + bookingId);
+    if (saving) saving.textContent = 'salvataggio…';
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'updateSalesforceFlag', coach_id: coachId, coach_token: coachToken, booking_id: bookingId, salesforce_opportunity: cb.checked })
+      });
+      const json = await res.json();
+      if (saving) { saving.textContent = json.success ? '✓' : '✗ errore'; setTimeout(function(){ saving.textContent=''; }, 2000); }
+      const b = allBookings.find(function(x){ return x.booking_id === bookingId; });
+      if (b) b.salesforce_opportunity = cb.checked ? 'TRUE' : 'FALSE';
+    } catch(e) {
+      if (saving) { saving.textContent = '✗ errore rete'; setTimeout(function(){ saving.textContent=''; }, 2000); }
+    }
+  };
+
   function escHtml(str) {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
