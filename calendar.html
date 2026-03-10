@@ -4,485 +4,479 @@
 <meta charset="UTF-8">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23E57711'/><text x='50' y='68' font-size='60' font-weight='bold' font-family='Arial' fill='white' text-anchor='middle'>W</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>WUP — Calendario Disponibilit&agrave; Coach</title>
+<title>WUP — Calendario Disponibilita Coach</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --orange:#E57711;--orange-dark:#c96510;--green:#31B15C;--green-dark:#279a4f;
-  --red:#e53e3e;--red-dark:#c53030;
+  --orange:#E57711;--orange-dark:#c96510;--orange-light:#fdf1e4;
   --gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;
   --gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;
   --gray-800:#1f2937;--gray-900:#111827;
   --radius-sm:8px;--radius:12px;--radius-lg:16px;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
-  --shadow:0 4px 16px rgba(0,0,0,.10);
-  --shadow-lg:0 8px 32px rgba(0,0,0,.14);
-  --cat-trading:#3b82f6;--cat-immobiliare:#22c55e;--cat-business:#8b5cf6;
-  --cat-mindset:#ec4899;--cat-mentor:#13284C;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08);--shadow:0 4px 16px rgba(0,0,0,.10);
 }
-body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh}
+html,body{height:100%}
+body{font-family:'Inter',sans-serif;background:#fff;color:var(--gray-800);display:flex;flex-direction:column}
 
-/* Header */
-.header{background:linear-gradient(135deg,var(--orange) 0%,var(--orange-dark) 100%);padding:16px 20px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
-.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px}
-.logo{color:#fff;font-size:24px;font-weight:800;letter-spacing:2px}
-.logo-sub{color:rgba(255,255,255,.8);font-size:11px;letter-spacing:.5px;text-transform:uppercase}
-.header-title{color:#fff;font-size:15px;font-weight:600;margin-left:auto;opacity:.9}
-.back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(255,255,255,.18);color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .15s;font-family:inherit;margin-left:auto}
-.back-btn:hover{background:rgba(255,255,255,.3)}
+/* ===== HEADER ===== */
+.header{background:linear-gradient(135deg,var(--gray-900) 0%,#1f2937 100%);padding:14px 20px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;transition:background .15s}
+.back-btn:hover{background:rgba(255,255,255,.2)}
+.logo{color:#fff;font-size:22px;font-weight:800;letter-spacing:2px}
+.logo span{color:var(--orange)}
+.header-title{color:rgba(255,255,255,.85);font-size:14px;font-weight:500;margin-left:4px}
+.header-right{margin-left:auto}
 
-/* Day tabs */
-.tabs-bar{background:#fff;border-bottom:1px solid var(--gray-200);padding:12px 20px;position:sticky;top:64px;z-index:90;box-shadow:var(--shadow-sm)}
-.tabs-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.day-tab{padding:10px 20px;border:2px solid var(--gray-300);border-radius:var(--radius-sm);background:#fff;color:var(--gray-600);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;letter-spacing:.3px}
-.day-tab:hover{border-color:var(--orange);color:var(--orange)}
-.day-tab.active{background:var(--orange);border-color:var(--orange);color:#fff}
-.filter-group{margin-left:auto;display:flex;align-items:center;gap:8px}
-.cat-filter{padding:8px 14px;border:2px solid var(--gray-300);border-radius:var(--radius-sm);background:#fff;color:var(--gray-700);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit}
-.cat-filter:focus{outline:none;border-color:var(--orange)}
-.search-input{padding:8px 12px;border:2px solid var(--gray-300);border-radius:var(--radius-sm);background:#fff;color:var(--gray-700);font-size:13px;font-weight:500;font-family:inherit;width:160px}
-.search-input:focus{outline:none;border-color:var(--orange)}
+/* ===== TOOLBAR ===== */
+.toolbar{background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:12px 20px;flex-shrink:0}
+.toolbar-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.coach-select{padding:8px 36px 8px 12px;border:1px solid var(--gray-300);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;font-weight:500;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 12px center no-repeat;appearance:none;-webkit-appearance:none;cursor:pointer;min-width:240px;color:var(--gray-800)}
+.coach-select:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(229,119,17,.15)}
+.cat-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.3px}
+.cat-badge.trading{background:#dbeafe;color:#2563eb}
+.cat-badge.immobiliare{background:#dcfce7;color:#16a34a}
+.cat-badge.business{background:#ede9fe;color:#7c3aed}
+.cat-badge.mindset{background:#fce7f3;color:#db2777}
+.cat-badge.mentor{background:#e2e8f0;color:#13284C}
+.stats-bar{font-size:12px;color:var(--gray-500);font-weight:500;margin-left:auto}
+.stats-bar strong{color:var(--gray-800)}
 
-/* Stats strip */
-.stats-strip{max-width:1200px;margin:16px auto 0;padding:0 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
-.stat-card{background:#fff;border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow-sm);text-align:center}
-.stat-value{font-size:28px;font-weight:800;color:var(--orange)}
-.stat-value.green{color:var(--green)}
-.stat-label{font-size:11px;color:var(--gray-500);margin-top:2px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+/* ===== CALENDAR LAYOUT ===== */
+.cal-outer{flex:1;overflow:auto;position:relative}
+.cal-table{display:grid;grid-template-columns:60px 1fr 1fr 1fr;min-width:640px}
 
-/* Schedule container */
-.schedule{max-width:1200px;margin:16px auto 32px;padding:0 20px}
+/* Sticky day headers */
+.dh-corner{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--gray-200);border-right:1px solid var(--gray-200)}
+.dh{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--gray-200);padding:12px 8px 10px;text-align:center}
+.dh+.dh{border-left:1px solid var(--gray-100)}
+.dh-name{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400)}
+.dh-name.is-today{color:var(--orange)}
+.dh-num{font-size:26px;font-weight:700;color:var(--gray-800);line-height:1.15;margin-top:2px}
+.dh-num.is-today{background:var(--orange);color:#fff;width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:20px}
 
-/* Timeline header */
-.timeline-header{display:flex;align-items:flex-end;padding:0 0 8px;margin-bottom:4px;border-bottom:2px solid var(--gray-300)}
-.tl-coach-col{width:220px;min-width:220px;flex-shrink:0;font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;padding-left:4px}
-.tl-bar-col{flex:1;position:relative;display:flex;align-items:flex-end;min-width:0}
-.hour-mark{position:absolute;bottom:0;font-size:10px;font-weight:600;color:var(--gray-400);transform:translateX(-50%)}
-.hour-line{position:absolute;bottom:-4px;width:1px;height:8px;background:var(--gray-300)}
+/* Hour rows */
+.hour-row{display:contents}
+.hour-label{border-right:1px solid var(--gray-200);position:relative;height:80px}
+.hour-label span{position:absolute;top:-8px;right:10px;font-size:11px;font-weight:500;color:var(--gray-400);white-space:nowrap}
+.day-cell{position:relative;border-bottom:1px solid var(--gray-200);height:80px}
+.day-cell+.day-cell{border-left:1px solid var(--gray-100)}
+.day-cell .half{position:absolute;top:50%;left:0;right:0;border-top:1px dashed rgba(0,0,0,.06)}
 
-/* Coach row */
-.coach-row{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid var(--gray-100);transition:background .1s}
-.coach-row:hover{background:rgba(229,119,17,.04)}
-.coach-info{width:220px;min-width:220px;flex-shrink:0;display:flex;align-items:center;gap:10px;padding-right:12px}
-.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;letter-spacing:.5px}
-.coach-details{min-width:0}
-.coach-name{font-size:13px;font-weight:700;color:var(--gray-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.coach-meta{display:flex;align-items:center;gap:6px;margin-top:2px}
-.cat-badge{padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
-.slot-count{font-size:11px;font-weight:600;color:var(--gray-400)}
-
-/* Timeline bar */
-.tl-bar-wrapper{flex:1;position:relative;height:32px;min-width:0}
-.tl-bar-bg{position:absolute;inset:0;background:var(--gray-100);border-radius:6px;overflow:hidden}
-.tl-bar-bg::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent calc(100%/9 - 0.5px),var(--gray-200) calc(100%/9 - 0.5px),var(--gray-200) calc(100%/9 + 0.5px))}
-.avail-block{position:absolute;top:3px;bottom:3px;border-radius:4px;cursor:pointer;transition:filter .15s,transform .15s;z-index:2}
-.avail-block:hover{filter:brightness(1.1);transform:scaleY(1.15);z-index:3}
+/* Availability blocks */
+.ev{position:absolute;border-radius:5px;overflow:hidden;cursor:pointer;transition:box-shadow .15s,transform .1s;z-index:5;border:1px solid rgba(255,255,255,.35);padding:2px 5px;display:flex;flex-direction:column;justify-content:center}
+.ev:hover{box-shadow:0 4px 14px rgba(0,0,0,.22);transform:scale(1.02);z-index:15}
+.ev-name{font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.18);line-height:1.3}
+.ev-time{font-size:9px;font-weight:500;color:rgba(255,255,255,.82);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
 
 /* Tooltip */
-.tooltip{position:fixed;z-index:500;background:var(--gray-900);color:#fff;padding:8px 12px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .12s}
-.tooltip.visible{opacity:1}
-.tooltip-time{font-weight:700;font-size:13px}
-.tooltip-slots{color:var(--gray-300);margin-top:2px}
+.tt{position:fixed;z-index:500;background:var(--gray-900);color:#fff;padding:10px 14px;border-radius:var(--radius-sm);font-size:12px;pointer-events:none;opacity:0;transition:opacity .12s;max-width:260px;box-shadow:0 8px 28px rgba(0,0,0,.35);line-height:1.5}
+.tt.show{opacity:1}
+.tt-name{font-weight:700;font-size:13px}
+.tt-time{color:rgba(255,255,255,.65);margin:2px 0 4px}
+.tt-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;color:#fff}
+
+/* Now line */
+.now-indicator{position:absolute;left:0;right:0;z-index:12;pointer-events:none}
+.now-indicator::before{content:'';position:absolute;left:-5px;top:-5px;width:10px;height:10px;border-radius:50%;background:#ef4444}
+.now-indicator::after{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:#ef4444}
 
 /* Footer */
-.footer{background:var(--gray-900);color:var(--gray-400);text-align:center;padding:24px 20px;font-size:12px}
-.footer a{color:var(--gray-300);text-decoration:none;margin:0 8px}
-.footer a:hover{color:#fff}
+.footer{background:var(--gray-50);border-top:1px solid var(--gray-200);padding:20px;text-align:center;font-size:11px;color:var(--gray-400);flex-shrink:0}
+.footer a{color:var(--gray-500);text-decoration:none}
+.footer a:hover{text-decoration:underline}
 
-/* Error screen */
-.error-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.error-card{background:#fff;border-radius:var(--radius-lg);padding:40px 32px;text-align:center;max-width:380px;box-shadow:var(--shadow-lg)}
-.error-card h2{color:var(--red);margin:12px 0 8px;font-size:20px}
-.error-card p{color:var(--gray-500);font-size:14px}
+/* Denied */
+.denied{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:16px}
+.denied h2{font-size:20px;color:var(--gray-800)}
+.denied p{color:var(--gray-500);font-size:14px}
 
-/* Empty */
-.empty{text-align:center;padding:48px 20px;color:var(--gray-400)}
-.empty-icon{font-size:40px;margin-bottom:12px}
-
-/* Legend */
-.legend{max-width:1200px;margin:0 auto 8px;padding:0 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--gray-500)}
-.legend-dot{width:12px;height:12px;border-radius:3px}
-
-@media(max-width:800px){
-  .coach-info{width:160px;min-width:160px}
-  .tl-coach-col{width:160px;min-width:160px}
-  .header-inner{flex-wrap:wrap}
-  .filter-group{margin-left:0;width:100%}
-  .search-input{flex:1}
-  .cat-filter{flex:1}
-}
-@media(max-width:600px){
-  .coach-info{width:120px;min-width:120px}
-  .tl-coach-col{width:120px;min-width:120px}
-  .avatar{width:28px;height:28px;font-size:10px}
-  .coach-name{font-size:11px}
-  .cat-badge{font-size:9px;padding:1px 5px}
-  .slot-count{font-size:10px}
-  .stats-strip{grid-template-columns:repeat(3,1fr)}
-  .tabs-inner{gap:4px}
-  .day-tab{padding:8px 12px;font-size:12px}
+/* Responsive */
+@media(max-width:700px){
+  .cal-table{grid-template-columns:44px 1fr 1fr 1fr;min-width:420px}
+  .hour-label span{font-size:10px;right:4px}
+  .dh-num{font-size:20px}
+  .dh-num.is-today{width:30px;height:30px;font-size:15px}
+  .ev{padding:1px 3px}
+  .ev-name{font-size:9px}
+  .ev-time{font-size:8px}
+  .toolbar-inner{flex-direction:column;align-items:stretch}
+  .stats-bar{margin-left:0;text-align:center}
+  .coach-select{min-width:unset;width:100%}
 }
 </style>
 </head>
 <body>
 
-<div id="error-screen" class="error-screen" style="display:none">
-  <div class="error-card">
-    <div style="font-size:48px">&#128274;</div>
-    <h2>Accesso negato</h2>
-    <p>Token non valido o mancante. Contatta l'amministratore.</p>
-  </div>
+<!-- ACCESS DENIED -->
+<div id="denied" class="denied" style="display:none">
+  <svg width="48" height="48" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>
+  <h2>Accesso negato</h2>
+  <p>Token non valido o mancante.</p>
 </div>
 
-<div id="app" style="display:none">
+<!-- MAIN APP -->
+<div id="app" style="display:none;flex-direction:column;min-height:100vh">
 
-<div class="header">
-  <div class="header-inner">
-    <div>
-      <div class="logo">WUP</div>
-      <div class="logo-sub">Coach Calendar</div>
-    </div>
-    <a id="back-link" href="#" class="back-btn">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 8H1M8 15l-7-7 7-7"/></svg>
-      Links
-    </a>
-  </div>
-</div>
-
-<div class="tabs-bar">
-  <div class="tabs-inner">
-    <button class="day-tab active" data-day="fri" onclick="switchDay('fri')">VEN 13</button>
-    <button class="day-tab" data-day="sat" onclick="switchDay('sat')">SAB 14</button>
-    <button class="day-tab" data-day="sun" onclick="switchDay('sun')">DOM 15</button>
-    <div class="filter-group">
-      <select class="cat-filter" id="catFilter" onchange="renderSchedule()">
-        <option value="">Tutte le categorie</option>
-        <option value="Trading">Trading</option>
-        <option value="Immobiliare">Immobiliare</option>
-        <option value="Business">Business</option>
-        <option value="Mindset">Mindset</option>
-        <option value="Mentor">Mentor</option>
-      </select>
-      <input type="text" class="search-input" id="searchInput" placeholder="Cerca coach..." oninput="renderSchedule()">
+  <div class="header">
+    <div class="header-inner">
+      <a id="backBtn" class="back-btn" href="#">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Indietro
+      </a>
+      <div class="logo"><span>W</span>UP</div>
+      <div class="header-title">Calendario Disponibilita Coach</div>
     </div>
   </div>
-</div>
 
-<div class="stats-strip" id="statsStrip"></div>
+  <div class="toolbar">
+    <div class="toolbar-inner">
+      <select id="coachSel" class="coach-select"><option value="all">Tutti i coach</option></select>
+      <span id="catBadge"></span>
+      <div id="stats" class="stats-bar"></div>
+    </div>
+  </div>
 
-<div class="schedule" id="scheduleArea">
-  <div class="legend" id="legend"></div>
-  <div id="timelineHeader"></div>
-  <div id="coachRows"></div>
-</div>
+  <div class="cal-outer" id="calOuter">
+    <div class="cal-table" id="calTable"></div>
+  </div>
 
-<div class="tooltip" id="tooltip">
-  <div class="tooltip-time" id="tooltipTime"></div>
-  <div class="tooltip-slots" id="tooltipSlots"></div>
-</div>
-
-<footer class="footer">
-  &copy; 2026 ABTG Srl &mdash; Tutti i diritti riservati &nbsp;|&nbsp;
-  <a href="https://www.iubenda.com/privacy-policy/96332498" target="_blank">Privacy Policy</a>
-  <a href="https://www.iubenda.com/privacy-policy/96332498/cookie-policy" target="_blank">Cookie Policy</a>
-</footer>
+  <div class="footer">
+    &copy; 2025 A Better Trading Group S.r.l. &mdash; P.IVA 12345678901 &mdash;
+    <a href="#">Privacy Policy</a> &middot; <a href="#">Cookie Policy</a>
+  </div>
 
 </div>
+
+<!-- TOOLTIP -->
+<div class="tt" id="tt"><div class="tt-name"></div><div class="tt-time"></div><div class="tt-badge"></div></div>
 
 <script>
 (function(){
-  // Token check
-  var VALID='f05edf3584610138878f6d799daea1fd';
-  var params=new URLSearchParams(window.location.search);
-  var token=params.get('token');
-  if(token!==VALID){
-    document.getElementById('error-screen').style.display='flex';
-    return;
+
+/* ===== TOKEN CHECK ===== */
+var P=new URLSearchParams(location.search);
+var tk=P.get('token');
+if(tk!=='f05edf3584610138878f6d799daea1fd'){document.getElementById('denied').style.display='flex';return;}
+var app=document.getElementById('app');app.style.display='flex';
+document.getElementById('backBtn').href='links.html?token='+tk;
+
+/* ===== DATA ===== */
+var COACHES=[
+  {id:'coach_001',name:'Giuseppe De Marco',cat:'Trading'},
+  {id:'coach_002',name:'Andrea Garagiola',cat:'Immobiliare'},
+  {id:'coach_003',name:'Colombo',cat:'Trading'},
+  {id:'coach_004',name:'Pasetto',cat:'Trading'},
+  {id:'coach_005',name:'Monza',cat:'Trading'},
+  {id:'coach_006',name:'Marras',cat:'Immobiliare'},
+  {id:'coach_007',name:'Pagliano',cat:'Trading'},
+  {id:'coach_009',name:'Ortelli',cat:'Mentor'},
+  {id:'coach_010',name:'Redi',cat:'Mentor'},
+  {id:'coach_011',name:'Fasciano',cat:'Trading'},
+  {id:'coach_013',name:'Sgambato',cat:'Trading'},
+  {id:'coach_014',name:'Acquistapace',cat:'Trading'},
+  {id:'coach_015',name:'Lovallo',cat:'Mindset'},
+  {id:'coach_016',name:'Rodriguez',cat:'Business'},
+  {id:'coach_017',name:'Crestan',cat:'Immobiliare'},
+  {id:'coach_018',name:'Migliaccio',cat:'Mentor'},
+  {id:'coach_024',name:'Bertacchi',cat:'Trading'},
+  {id:'coach_026',name:'Cuoco',cat:'Immobiliare'},
+  {id:'coach_027',name:'Lavorenti',cat:'Trading'},
+  {id:'coach_029',name:'Salvato',cat:'Mentor'},
+  {id:'coach_030',name:'Alessandro Lombardi',cat:'Business'},
+  {id:'coach_031',name:'Adrian Catan',cat:'Business'}
+];
+
+var AVAIL={
+  fri:{
+    coach_001:[0,0,1,1,1,1,1,1,0,0,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,1,1],
+    coach_002:[1,1,1,0,1,1,0,1,1,1,1,0,1,1,1,1,0,0,0,1,1,1,1,1,0,0,1],
+    coach_003:[0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1],
+    coach_004:[1,1,1,1,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,0,0,1,1,1],
+    coach_005:[0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1,0,0,0,0,1,1,1,1,1,0,0],
+    coach_006:[1,1,1,0,1,1,0,0,1,1,1,1,1,0,0,1,0,1,1,1,0,1,1,1,0,0,1],
+    coach_007:[0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0],
+    coach_009:[1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,0],
+    coach_010:[1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,0],
+    coach_011:[1,1,1,0,0,1,1,1,1,1,0,0,0,0,1,1,1,1,0,1,1,1,1,0,1,1,1],
+    coach_013:[0,0,0,0,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,1,1,1,1,1,0,0,1],
+    coach_014:[1,1,1,1,0,0,1,1,1,0,0,0,1,1,1,0,1,1,1,0,0,1,1,1,1,0,0],
+    coach_015:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1],
+    coach_016:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],
+    coach_017:[0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1],
+    coach_018:[1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1],
+    coach_024:[0,1,1,1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1],
+    coach_026:[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],
+    coach_027:[0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1,0,0,0,0,1,1,1,1,1,0,0],
+    coach_029:[1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1],
+    coach_030:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    coach_031:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+  },
+  sat:{
+    coach_001:[0,0,0,1,1,1,1,0,1,1,1,0,0,0,0,1,1,1,1,1,0,0,1,1,1,1,1],
+    coach_002:[1,1,1,1,0,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    coach_003:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0],
+    coach_004:[1,1,1,1,0,1,1,1,0,1,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,1,1],
+    coach_005:[0,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1],
+    coach_006:[1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1],
+    coach_007:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0],
+    coach_009:[1,1,1,0,1,1,1,0,0,1,1,1,1,1,1,0,1,1,1,0,0,0,1,1,1,1,1],
+    coach_010:[0,1,1,1,1,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1],
+    coach_011:[0,0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,0,1],
+    coach_013:[1,1,1,1,1,1,0,0,1,1,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,1,0],
+    coach_014:[0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0],
+    coach_015:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    coach_016:[0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    coach_017:[0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1],
+    coach_018:[1,1,1,0,1,1,1,0,0,1,1,1,1,1,1,0,1,1,1,0,0,0,1,1,1,1,1],
+    coach_024:[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    coach_026:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1],
+    coach_027:[0,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1],
+    coach_029:[0,1,1,1,1,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1],
+    coach_030:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    coach_031:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+  },
+  sun:{
+    coach_001:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1],
+    coach_002:[1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,1,1,0,0,1,1],
+    coach_003:[0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1],
+    coach_004:[0,0,1,1,1,0,0,0,0,1,1,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0],
+    coach_005:[0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,1,0,1,1,1,1,0],
+    coach_006:[1,1,1,1,1,0,0,0,0,1,1,0,0,0,1,1,1,1,1,0,0,1,1,0,0,1,1],
+    coach_007:[0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+    coach_009:[1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,0,0,1,1,1,1,1,0,0,1,1,1],
+    coach_010:[0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1,1,1],
+    coach_011:[0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,0,0,1,1,1,1],
+    coach_013:[0,0,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,1,1,1,0,0,1,1],
+    coach_014:[0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,1,1,1,0,0],
+    coach_015:[0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    coach_016:[0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,1,1,1,1,1,0,1],
+    coach_017:[0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1],
+    coach_018:[0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1,1,1],
+    coach_024:[1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1],
+    coach_026:[0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    coach_027:[0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,1,0,1,1,1,1,0],
+    coach_029:[1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,0,0,1,1,1,1,1,0,0,1,1,1],
+    coach_030:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    coach_031:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
   }
-  document.getElementById('app').style.display='';
-  document.getElementById('back-link').href='links.html?token='+token;
+};
 
-  // Data
-  var COACHES=[
-    {id:'coach_001',name:'Giuseppe De Marco',cat:'Trading'},
-    {id:'coach_002',name:'Andrea Garagiola',cat:'Immobiliare'},
-    {id:'coach_003',name:'Colombo',cat:'Trading'},
-    {id:'coach_004',name:'Pasetto',cat:'Trading'},
-    {id:'coach_005',name:'Monza',cat:'Trading'},
-    {id:'coach_006',name:'Marras',cat:'Immobiliare'},
-    {id:'coach_007',name:'Pagliano',cat:'Trading'},
-    {id:'coach_009',name:'Ortelli',cat:'Mentor'},
-    {id:'coach_010',name:'Redi',cat:'Mentor'},
-    {id:'coach_011',name:'Fasciano',cat:'Trading'},
-    {id:'coach_013',name:'Sgambato',cat:'Trading'},
-    {id:'coach_014',name:'Acquistapace',cat:'Trading'},
-    {id:'coach_015',name:'Lovallo',cat:'Mindset'},
-    {id:'coach_016',name:'Rodriguez',cat:'Business'},
-    {id:'coach_017',name:'Crestan',cat:'Immobiliare'},
-    {id:'coach_018',name:'Migliaccio',cat:'Mentor'},
-    {id:'coach_024',name:'Bertacchi',cat:'Trading'},
-    {id:'coach_026',name:'Cuoco',cat:'Immobiliare'},
-    {id:'coach_027',name:'Lavorenti',cat:'Trading'},
-    {id:'coach_029',name:'Salvato',cat:'Mentor'}
-  ];
+var SLOTS=[
+  '09:00','09:20','09:40','10:00','10:20','10:40',
+  '11:00','11:20','11:40','12:00','12:20','12:40',
+  '13:00','13:20','13:40','14:00','14:20','14:40',
+  '15:00','15:20','15:40','16:00','16:20','16:40',
+  '17:00','17:20','17:40'
+];
 
-  var AVAIL={
-    fri:{
-      coach_001:[0,0,1,1,1,1,1,1,0,0,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,1,1],
-      coach_002:[1,1,1,0,1,1,0,1,1,1,1,0,1,1,1,1,0,0,0,1,1,1,1,1,0,0,1],
-      coach_003:[0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1],
-      coach_004:[1,1,1,1,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,0,0,1,1,1],
-      coach_005:[0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1,0,0,0,0,1,1,1,1,1,0,0],
-      coach_006:[1,1,1,0,1,1,0,0,1,1,1,1,1,0,0,1,0,1,1,1,0,1,1,1,0,0,1],
-      coach_007:[0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0],
-      coach_009:[1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,0],
-      coach_010:[1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,0],
-      coach_011:[1,1,1,0,0,1,1,1,1,1,0,0,0,0,1,1,1,1,0,1,1,1,1,0,1,1,1],
-      coach_013:[0,0,0,0,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,1,1,1,1,1,0,0,1],
-      coach_014:[1,1,1,1,0,0,1,1,1,0,0,0,1,1,1,0,1,1,1,0,0,1,1,1,1,0,0],
-      coach_015:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1],
-      coach_016:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],
-      coach_017:[0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1],
-      coach_018:[1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1],
-      coach_024:[0,1,1,1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1],
-      coach_026:[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],
-      coach_027:[0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1,0,0,0,0,1,1,1,1,1,0,0],
-      coach_029:[1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1]
-    },
-    sat:{
-      coach_001:[0,0,0,1,1,1,1,0,1,1,1,0,0,0,0,1,1,1,1,1,0,0,1,1,1,1,1],
-      coach_002:[1,1,1,1,0,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1],
-      coach_003:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0],
-      coach_004:[1,1,1,1,0,1,1,1,0,1,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,1,1],
-      coach_005:[0,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1],
-      coach_006:[1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1],
-      coach_007:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0],
-      coach_009:[1,1,1,0,1,1,1,0,0,1,1,1,1,1,1,0,1,1,1,0,0,0,1,1,1,1,1],
-      coach_010:[0,1,1,1,1,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1],
-      coach_011:[0,0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,0,1],
-      coach_013:[1,1,1,1,1,1,0,0,1,1,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,1,0],
-      coach_014:[0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0],
-      coach_015:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      coach_016:[0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      coach_017:[0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1],
-      coach_018:[1,1,1,0,1,1,1,0,0,1,1,1,1,1,1,0,1,1,1,0,0,0,1,1,1,1,1],
-      coach_024:[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-      coach_026:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1],
-      coach_027:[0,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1],
-      coach_029:[0,1,1,1,1,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1]
-    },
-    sun:{
-      coach_001:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1],
-      coach_002:[1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,1,1,0,0,1,1],
-      coach_003:[0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1],
-      coach_004:[0,0,1,1,1,0,0,0,0,1,1,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0],
-      coach_005:[0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,1,0,1,1,1,1,0],
-      coach_006:[1,1,1,1,1,0,0,0,0,1,1,0,0,0,1,1,1,1,1,0,0,1,1,0,0,1,1],
-      coach_007:[0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
-      coach_009:[1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,0,0,1,1,1,1,1,0,0,1,1,1],
-      coach_010:[0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1,1,1],
-      coach_011:[0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,0,0,1,1,1,1],
-      coach_013:[0,0,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,1,1,1,0,0,1,1],
-      coach_014:[0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,1,1,1,0,0],
-      coach_015:[0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      coach_016:[0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,1,1,1,1,1,0,1],
-      coach_017:[0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1],
-      coach_018:[0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1,1,1],
-      coach_024:[1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1],
-      coach_026:[0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-      coach_027:[0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,1,0,1,1,1,1,0],
-      coach_029:[1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,0,0,1,1,1,1,1,0,0,1,1,1]
-    }
-  };
+var DAYS=[
+  {key:'fri',lbl:'ven',num:13},
+  {key:'sat',lbl:'sab',num:14},
+  {key:'sun',lbl:'dom',num:15}
+];
 
-  var SLOTS=[];
-  for(var h=9;h<=17;h++){
-    for(var m=0;m<60;m+=20){
-      if(h===17&&m>40)break;
-      SLOTS.push(('0'+h).slice(-2)+':'+('0'+m).slice(-2));
-    }
+var HOURS=[9,10,11,12,13,14,15,16,17];
+var H_PX=80;
+var CAT_COLORS={Trading:'#3b82f6',Immobiliare:'#22c55e',Business:'#8b5cf6',Mindset:'#ec4899',Mentor:'#13284C'};
+var CAT_CLS={Trading:'trading',Immobiliare:'immobiliare',Business:'business',Mindset:'mindset',Mentor:'mentor'};
+
+/* Unique color per coach */
+var PALETTE=[
+  '#3b82f6','#22c55e','#8b5cf6','#ec4899','#f59e0b','#06b6d4',
+  '#ef4444','#10b981','#6366f1','#f97316','#14b8a6','#e11d48',
+  '#0ea5e9','#84cc16','#a855f7','#fb923c','#2dd4bf','#be185d',
+  '#7c3aed','#059669','#dc2626','#0891b2'
+];
+var cColorMap={};
+COACHES.forEach(function(c,i){cColorMap[c.id]=PALETTE[i];});
+
+/* Populate select */
+var sel=document.getElementById('coachSel');
+COACHES.forEach(function(c){
+  var o=document.createElement('option');
+  o.value=c.id;
+  o.textContent=c.name+' ('+c.cat+')';
+  sel.appendChild(o);
+});
+
+/* ===== HELPERS ===== */
+function slotMins(i){var p=SLOTS[i].split(':');return +p[0]*60+ +p[1];}
+function minsPx(m){return((m-540)/60)*H_PX;} /* 540=9*60 */
+function fmt(m){var h=Math.floor(m/60),mn=m%60;return(h<10?'0':'')+h+':'+(mn<10?'0':'')+mn;}
+function initials(n){return n.split(' ').map(function(w){return w[0];}).join('').toUpperCase();}
+
+function mergeSlots(arr){
+  var out=[],i=0;
+  while(i<arr.length){
+    if(arr[i]===1){var s=i;while(i<arr.length&&arr[i]===1)i++;out.push([s,i-1]);}
+    else i++;
   }
-  // SLOTS length = 27
+  return out;
+}
 
-  var DAY_LABELS={fri:'Venerd\u00ec 13 Marzo',sat:'Sabato 14 Marzo',sun:'Domenica 15 Marzo'};
-  var CAT_COLORS={Trading:'var(--cat-trading)',Immobiliare:'var(--cat-immobiliare)',Business:'var(--cat-business)',Mindset:'var(--cat-mindset)',Mentor:'var(--cat-mentor)'};
-  var CAT_TEXT={Trading:'#fff',Immobiliare:'#fff',Business:'#fff',Mindset:'#fff',Mentor:'#fff'};
+/* ===== RENDER ===== */
+function render(){
+  var v=sel.value, isAll=v==='all';
+  var list=isAll?COACHES:COACHES.filter(function(c){return c.id===v;});
+  var tbl=document.getElementById('calTable');
+  tbl.innerHTML='';
 
-  var currentDay='fri';
-  var tooltip=document.getElementById('tooltip');
+  /* Category badge */
+  var bEl=document.getElementById('catBadge');
+  if(!isAll&&list.length){
+    var cc=list[0];
+    bEl.innerHTML='<span class="cat-badge '+CAT_CLS[cc.cat]+'">'+cc.cat+'</span>';
+  } else bEl.innerHTML='';
 
-  function getInitials(name){
-    var parts=name.split(' ');
-    if(parts.length>=2)return(parts[0][0]+parts[parts.length-1][0]).toUpperCase();
-    return name.substring(0,2).toUpperCase();
-  }
+  /* Stats */
+  var ts=0;
+  list.forEach(function(c){DAYS.forEach(function(d){
+    var a=AVAIL[d.key][c.id];if(a)a.forEach(function(v){ts+=v;});
+  });});
+  document.getElementById('stats').innerHTML='<strong>'+ts+'</strong> slot disponibili'+(isAll?' ('+list.length+' coach)':'');
 
-  function countAvail(arr){
-    var c=0;for(var i=0;i<arr.length;i++)if(arr[i])c++;return c;
-  }
+  /* Today check */
+  var now=new Date();
+  var tDate=now.getDate(),tMonth=now.getMonth(); /* Mar=2 */
 
-  // Find contiguous available blocks
-  function getBlocks(arr){
+  /* Day headers */
+  var corner=document.createElement('div');corner.className='dh-corner';tbl.appendChild(corner);
+  DAYS.forEach(function(d){
+    var el=document.createElement('div');el.className='dh';
+    var isT=(tMonth===2&&tDate===d.num);
+    el.innerHTML='<div class="dh-name'+(isT?' is-today':'')+'">'+d.lbl+'</div><div class="dh-num'+(isT?' is-today':'')+'">'+d.num+'</div>';
+    tbl.appendChild(el);
+  });
+
+  /* Hour rows */
+  HOURS.forEach(function(h){
+    var hl=document.createElement('div');hl.className='hour-label';
+    hl.innerHTML='<span>'+(h<10?'0':'')+h+':00</span>';
+    tbl.appendChild(hl);
+    DAYS.forEach(function(d){
+      var cell=document.createElement('div');cell.className='day-cell';
+      cell.dataset.day=d.key;cell.dataset.hour=h;
+      var half=document.createElement('div');half.className='half';
+      cell.appendChild(half);
+      tbl.appendChild(cell);
+    });
+  });
+
+  /* Place blocks per day */
+  DAYS.forEach(function(d){
     var blocks=[];
-    var i=0;
-    while(i<arr.length){
-      if(arr[i]===1){
-        var start=i;
-        while(i<arr.length&&arr[i]===1)i++;
-        blocks.push({start:start,end:i-1,count:i-start});
-      }else{
-        i++;
-      }
-    }
-    return blocks;
-  }
-
-  function slotToPercent(idx){
-    // 27 slots from 09:00 to 17:40. Timeline goes 09:00 to 18:00 = 540 minutes
-    // slot idx 0 = minute 0, each slot = 20 min apart
-    var minuteStart=idx*20;
-    return(minuteStart/540)*100;
-  }
-  function slotEndPercent(idx){
-    // end of slot = start + 20min (visual width covers the 20-min interval)
-    var minuteEnd=(idx+1)*20;
-    return(minuteEnd/540)*100;
-  }
-
-  function addEndTime(slotIdx){
-    // The session ends 15 min after slot start
-    var totalMin=9*60+slotIdx*20+15;
-    var h=Math.floor(totalMin/60);
-    var m=totalMin%60;
-    return('0'+h).slice(-2)+':'+('0'+m).slice(-2);
-  }
-
-  window.switchDay=function(day){
-    currentDay=day;
-    document.querySelectorAll('.day-tab').forEach(function(b){
-      b.classList.toggle('active',b.getAttribute('data-day')===day);
-    });
-    renderSchedule();
-  };
-
-  window.renderSchedule=function(){
-    var dayData=AVAIL[currentDay];
-    var catFilter=document.getElementById('catFilter').value;
-    var search=document.getElementById('searchInput').value.toLowerCase().trim();
-
-    // Filter and sort coaches
-    var coaches=COACHES.filter(function(c){
-      if(catFilter&&c.cat!==catFilter)return false;
-      if(search&&c.name.toLowerCase().indexOf(search)===-1)return false;
-      return true;
-    }).map(function(c){
-      var avail=dayData[c.id]||[];
-      return{id:c.id,name:c.name,cat:c.cat,avail:avail,availCount:countAvail(avail)};
-    }).sort(function(a,b){return b.availCount-a.availCount});
-
-    // Stats
-    var totalCoaches=coaches.length;
-    var totalSlots=coaches.reduce(function(s,c){return s+c.availCount},0);
-    var avgSlots=totalCoaches?Math.round(totalSlots/totalCoaches):0;
-    var maxSlots=coaches.length?coaches[0].availCount:0;
-
-    document.getElementById('statsStrip').innerHTML=
-      '<div class="stat-card"><div class="stat-value">'+totalCoaches+'</div><div class="stat-label">Coach</div></div>'+
-      '<div class="stat-card"><div class="stat-value green">'+totalSlots+'</div><div class="stat-label">Slot disponibili</div></div>'+
-      '<div class="stat-card"><div class="stat-value" style="color:var(--cat-trading)">'+avgSlots+'</div><div class="stat-label">Media per coach</div></div>'+
-      '<div class="stat-card"><div class="stat-value" style="color:var(--cat-business)">'+maxSlots+'</div><div class="stat-label">Max disponibilit&agrave;</div></div>';
-
-    // Legend
-    document.getElementById('legend').innerHTML=
-      '<span style="font-size:12px;font-weight:700;color:var(--gray-600)">'+DAY_LABELS[currentDay]+'</span>'+
-      Object.keys(CAT_COLORS).map(function(cat){
-        return '<span class="legend-item"><span class="legend-dot" style="background:'+CAT_COLORS[cat]+'"></span>'+cat+'</span>';
-      }).join('');
-
-    // Timeline header with hour markers
-    var headerHTML='<div class="timeline-header"><div class="tl-coach-col">Coach</div><div class="tl-bar-col" style="height:24px">';
-    for(var h=9;h<=18;h++){
-      var pct=((h-9)*60/540)*100;
-      headerHTML+='<span class="hour-mark" style="left:'+pct+'%">'+h+':00</span>';
-      headerHTML+='<span class="hour-line" style="left:'+pct+'%"></span>';
-    }
-    headerHTML+='</div></div>';
-    document.getElementById('timelineHeader').innerHTML=headerHTML;
-
-    // Coach rows
-    if(!coaches.length){
-      document.getElementById('coachRows').innerHTML='<div class="empty"><div class="empty-icon">&#128197;</div><div>Nessun coach trovato</div></div>';
-      return;
-    }
-
-    var rowsHTML='';
-    coaches.forEach(function(c){
-      var blocks=getBlocks(c.avail);
-      var color=CAT_COLORS[c.cat]||'var(--gray-500)';
-
-      rowsHTML+='<div class="coach-row">';
-      rowsHTML+='<div class="coach-info">';
-      rowsHTML+='<div class="avatar" style="background:'+color+'">'+getInitials(c.name)+'</div>';
-      rowsHTML+='<div class="coach-details">';
-      rowsHTML+='<div class="coach-name">'+c.name+'</div>';
-      rowsHTML+='<div class="coach-meta">';
-      rowsHTML+='<span class="cat-badge" style="background:'+color+';color:'+CAT_TEXT[c.cat]+'">'+c.cat+'</span>';
-      rowsHTML+='<span class="slot-count">'+c.availCount+'/27</span>';
-      rowsHTML+='</div></div></div>';
-
-      rowsHTML+='<div class="tl-bar-wrapper"><div class="tl-bar-bg">';
-      // hour grid lines
-      for(var h=9;h<=18;h++){
-        var pct=((h-9)*60/540)*100;
-        if(h>9&&h<18)rowsHTML+='<div style="position:absolute;top:0;bottom:0;left:'+pct+'%;width:1px;background:var(--gray-200);z-index:1"></div>';
-      }
-      blocks.forEach(function(b){
-        var left=slotToPercent(b.start);
-        var right=slotEndPercent(b.end);
-        var width=right-left;
-        var startTime=SLOTS[b.start];
-        var endTime=addEndTime(b.end);
-        rowsHTML+='<div class="avail-block" style="left:'+left+'%;width:'+width+'%;background:'+color+';opacity:0.85" '+
-          'data-start="'+startTime+'" data-end="'+endTime+'" data-count="'+b.count+'" data-cat="'+c.cat+'" '+
-          'onmouseenter="showTip(event,this)" onmouseleave="hideTip()" '+
-          'ontouchstart="showTip(event,this)" ontouchend="hideTip()"></div>';
+    list.forEach(function(coach){
+      var av=AVAIL[d.key][coach.id];if(!av)return;
+      mergeSlots(av).forEach(function(seg){
+        var sm=slotMins(seg[0]), em=slotMins(seg[1])+20;
+        blocks.push({coach:coach,sm:sm,em:em});
       });
-      rowsHTML+='</div></div>';
-      rowsHTML+='</div>';
     });
-    document.getElementById('coachRows').innerHTML=rowsHTML;
-  };
+    if(!blocks.length)return;
 
-  window.showTip=function(e,el){
-    var t=document.getElementById('tooltip');
-    var tt=document.getElementById('tooltipTime');
-    var ts=document.getElementById('tooltipSlots');
-    tt.textContent=el.getAttribute('data-start')+' \u2013 '+el.getAttribute('data-end');
-    ts.textContent=el.getAttribute('data-count')+' slot disponibil'+(el.getAttribute('data-count')==='1'?'e':'i');
-    t.classList.add('visible');
+    /* Layout columns for overlapping blocks (all mode) */
+    if(isAll){
+      blocks.sort(function(a,b){return a.sm-b.sm||a.coach.name.localeCompare(b.coach.name);});
+      var cols=[];
+      blocks.forEach(function(b){
+        var placed=false;
+        for(var c=0;c<cols.length;c++){
+          if(b.sm>=cols[c]){cols[c]=b.em;b.col=c;placed=true;break;}
+        }
+        if(!placed){b.col=cols.length;cols.push(b.em);}
+      });
+      var tc=cols.length;
+      blocks.forEach(function(b){b.tc=tc;});
+    }
 
-    var rect=el.getBoundingClientRect();
-    var tw=t.offsetWidth;
-    var th=t.offsetHeight;
-    var left=rect.left+rect.width/2-tw/2;
-    var top=rect.top-th-8;
-    if(left<4)left=4;
-    if(left+tw>window.innerWidth-4)left=window.innerWidth-4-tw;
-    if(top<4)top=rect.bottom+8;
-    t.style.left=left+'px';
-    t.style.top=top+'px';
-  };
+    /* Find first cell for this day (hour=9) */
+    var anchor=tbl.querySelector('.day-cell[data-day="'+d.key+'"][data-hour="9"]');
+    if(!anchor)return;
 
-  window.hideTip=function(){
-    document.getElementById('tooltip').classList.remove('visible');
-  };
+    blocks.forEach(function(b){
+      var top=minsPx(b.sm);
+      var h=minsPx(b.em)-top;
+      if(h<6)h=6;
 
-  // Initial render
-  renderSchedule();
+      var el=document.createElement('div');el.className='ev';
+      var color=isAll?cColorMap[b.coach.id]:CAT_COLORS[b.coach.cat]||'#6b7280';
+      el.style.background=color;
+      el.style.top=top+'px';
+      el.style.height=h+'px';
+
+      if(isAll){
+        var cw=100/b.tc;
+        el.style.left=(b.col*cw)+'%';
+        el.style.width='calc('+cw+'% - 2px)';
+      } else {
+        el.style.left='2px';el.style.right='2px';
+      }
+
+      var sStr=fmt(b.sm),eStr=fmt(b.em);
+      var dName=isAll?(b.coach.name.length>14?initials(b.coach.name):b.coach.name):b.coach.name;
+
+      if(h>28){
+        el.innerHTML='<div class="ev-name">'+dName+'</div><div class="ev-time">'+sStr+' - '+eStr+'</div>';
+      } else if(h>14){
+        el.innerHTML='<div class="ev-name">'+dName+'</div>';
+      }
+
+      el.addEventListener('mouseenter',function(e){ttShow(e,b.coach.name,sStr+' - '+eStr,b.coach.cat,color);});
+      el.addEventListener('mousemove',ttMove);
+      el.addEventListener('mouseleave',ttHide);
+
+      /* Touch support */
+      el.addEventListener('touchstart',function(e){
+        e.preventDefault();
+        var t=e.touches[0];
+        ttShow(t,b.coach.name,sStr+' - '+eStr,b.coach.cat,color);
+      },{passive:false});
+      el.addEventListener('touchend',function(){setTimeout(ttHide,1500);});
+
+      anchor.appendChild(el);
+    });
+
+    /* Now line */
+    var nowH=now.getHours(),nowM=now.getMinutes(),nowTot=nowH*60+nowM;
+    if(tMonth===2&&tDate===d.num&&nowTot>=540&&nowTot<=1080){
+      var nl=document.createElement('div');nl.className='now-indicator';
+      nl.style.top=minsPx(nowTot)+'px';
+      anchor.appendChild(nl);
+    }
+  });
+}
+
+/* ===== TOOLTIP ===== */
+var ttEl=document.getElementById('tt');
+function ttShow(e,name,time,cat,color){
+  ttEl.querySelector('.tt-name').textContent=name;
+  ttEl.querySelector('.tt-time').textContent=time;
+  var badge=ttEl.querySelector('.tt-badge');badge.textContent=cat;badge.style.background=color;
+  ttEl.classList.add('show');
+  ttMove(e);
+}
+function ttMove(e){
+  var cx=e.clientX||e.pageX,cy=e.clientY||e.pageY;
+  var x=cx+14,y=cy+14;
+  if(x+260>window.innerWidth)x=cx-270;
+  if(y+80>window.innerHeight)y=cy-90;
+  ttEl.style.left=x+'px';ttEl.style.top=y+'px';
+}
+function ttHide(){ttEl.classList.remove('show');}
+
+/* ===== INIT ===== */
+sel.addEventListener('change',render);
+render();
+
+/* Scroll to ~current hour area or 9:00 */
+var outer=document.getElementById('calOuter');
+var now2=new Date(),ch=now2.getHours();
+if(ch>=9&&ch<=17){outer.scrollTop=minsPx(ch*60);}
+
 })();
 </script>
 </body>
