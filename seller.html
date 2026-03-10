@@ -353,6 +353,13 @@ textarea.form-input{resize:vertical;min-height:60px}
 <script>
 (function() {
   var API_URL = 'https://script.google.com/macros/s/AKfycbyRPpzCcN0h2kMyg6xKVMJroRZwQqYyxXtGmuaqtHh8BCVVQbHvT6DKjzJs0HrqFtyv/exec';
+
+  // Helper: POST con JSON body (evita problemi redirect 302 con FormData)
+  async function apiPost(data) {
+    var res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(data) });
+    return await res.json();
+  }
+
   var AVATAR_COLORS = ['#E57711','#31B15C','#3b82f6','#8b5cf6','#ec4899','#f59e0b','#06b6d4','#10b981'];
 
   var sellerId = '';
@@ -389,11 +396,7 @@ textarea.form-input{resize:vertical;min-height:60px}
 
   async function authenticate() {
     try {
-      var fd = new FormData();
-      fd.append('action', 'seller_auth');
-      fd.append('seller_id', sellerId);
-      fd.append('seller_token', sellerToken);
-      var res = await fetch(API_URL, { method: 'POST', body: fd });
+      var res = await fetch(API_URL + '?action=seller_auth&seller_id=' + encodeURIComponent(sellerId) + '&seller_token=' + encodeURIComponent(sellerToken));
       var json = await res.json();
       if (!json.success) { showErrorScreen(); return; }
 
@@ -422,11 +425,7 @@ textarea.form-input{resize:vertical;min-height:60px}
   async function loadBookings() {
     showLoading();
     try {
-      var fd = new FormData();
-      fd.append('action', 'seller_bookings');
-      fd.append('seller_id', sellerId);
-      fd.append('seller_token', sellerToken);
-      var res = await fetch(API_URL, { method: 'POST', body: fd });
+      var res = await fetch(API_URL + '?action=seller_bookings&seller_id=' + encodeURIComponent(sellerId) + '&seller_token=' + encodeURIComponent(sellerToken));
       var json = await res.json();
       if (!json.success) {
         if (json.code === 'UNAUTHORIZED') { showErrorScreen(); return; }
@@ -592,14 +591,7 @@ textarea.form-input{resize:vertical;min-height:60px}
     if (saving) saving.textContent = 'salvataggio...';
     sel.className = 'esito-select ' + (esito === 'VENDUTO' ? 'venduto' : esito === 'NON_VENDUTO' ? 'non_venduto' : esito === 'IN_TRATTATIVA' ? 'in_trattativa' : '');
     try {
-      var fd = new FormData();
-      fd.append('action', 'seller_update_esito');
-      fd.append('seller_id', sellerId);
-      fd.append('seller_token', sellerToken);
-      fd.append('booking_id', bookingId);
-      fd.append('esito', esito);
-      var res = await fetch(API_URL, { method: 'POST', body: fd });
-      var json = await res.json();
+      var json = await apiPost({ action:'seller_update_esito', seller_id:sellerId, seller_token:sellerToken, booking_id:bookingId, esito:esito });
       if (saving) { saving.textContent = json.success ? 'salvato' : 'errore'; setTimeout(function(){ saving.textContent=''; }, 2000); }
       var b = allBookings.find(function(x){ return x.booking_id === bookingId; });
       if (b) b.esito = esito;
@@ -614,14 +606,7 @@ textarea.form-input{resize:vertical;min-height:60px}
     var saving = document.getElementById('sf-saving-' + bookingId);
     if (saving) saving.textContent = 'salvataggio...';
     try {
-      var fd = new FormData();
-      fd.append('action', 'seller_update_salesforce');
-      fd.append('seller_id', sellerId);
-      fd.append('seller_token', sellerToken);
-      fd.append('booking_id', bookingId);
-      fd.append('salesforce', cb.checked ? 'true' : 'false');
-      var res = await fetch(API_URL, { method: 'POST', body: fd });
-      var json = await res.json();
+      var json = await apiPost({ action:'seller_update_salesforce', seller_id:sellerId, seller_token:sellerToken, booking_id:bookingId, salesforce:cb.checked ? 'true' : 'false' });
       if (saving) { saving.textContent = json.success ? 'salvato' : 'errore'; setTimeout(function(){ saving.textContent=''; }, 2000); }
       var b = allBookings.find(function(x){ return x.booking_id === bookingId; });
       if (b) b.salesforce_opportunity = cb.checked ? 'TRUE' : 'FALSE';
@@ -656,14 +641,7 @@ textarea.form-input{resize:vertical;min-height:60px}
     btn.disabled = true;
     btn.textContent = 'Cancellazione...';
     try {
-      var fd = new FormData();
-      fd.append('action', 'cancelBooking');
-      fd.append('booking_id', cancelTarget.booking_id);
-      fd.append('cancel_token', cancelTarget.cancel_token || '');
-      fd.append('seller_id', sellerId);
-      fd.append('seller_token', sellerToken);
-      var res = await fetch(API_URL, { method: 'POST', body: fd });
-      var json = await res.json();
+      var json = await apiPost({ action:'cancelBooking', booking_id:cancelTarget.booking_id, cancel_token:cancelTarget.cancel_token||'', seller_id:sellerId, seller_token:sellerToken });
       document.getElementById('cancel-modal').style.display = 'none';
       if (json.success) {
         showAlert('Prenotazione cancellata con successo.', 'success');
@@ -710,9 +688,7 @@ textarea.form-input{resize:vertical;min-height:60px}
     var container = document.getElementById('coach-list-container');
     container.innerHTML = '<div class="slots-loading"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin-bottom:8px"></div>Caricamento coach...</div>';
     try {
-      var fd = new FormData();
-      fd.append('action', 'listCoaches');
-      var res = await fetch(API_URL, { method: 'POST', body: fd });
+      var res = await fetch(API_URL + '?action=listCoaches');
       var json = await res.json();
       var coaches = (json.success && json.data && json.data.coaches) ? json.data.coaches : [];
       if (!coaches.length) {
@@ -772,11 +748,7 @@ textarea.form-input{resize:vertical;min-height:60px}
     var container = document.getElementById('slots-container');
     container.innerHTML = '<div class="slots-loading"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin-bottom:8px"></div>Caricamento orari...</div>';
     try {
-      var fd = new FormData();
-      fd.append('action', 'getAvailability');
-      fd.append('coach_id', wizCoachId);
-      fd.append('date', wizDate);
-      var res = await fetch(API_URL, { method: 'POST', body: fd });
+      var res = await fetch(API_URL + '?action=getAvailability&coach_id=' + encodeURIComponent(wizCoachId) + '&date=' + encodeURIComponent(wizDate));
       var json = await res.json();
       var slots = (json.success && json.data && json.data.slots) ? json.data.slots : [];
       if (!slots.length) {
@@ -839,20 +811,19 @@ textarea.form-input{resize:vertical;min-height:60px}
     btn.textContent = 'Prenotazione in corso...';
 
     try {
-      var fd = new FormData();
-      fd.append('action', 'createBooking');
-      fd.append('coach_id', wizCoachId);
-      fd.append('start_datetime', wizSlotTime);
-      fd.append('client_name', name);
-      fd.append('client_surname', surname);
-      fd.append('client_email', email);
-      fd.append('client_phone', phone);
-      fd.append('notes', notes);
-      fd.append('seller_id', sellerId);
-      fd.append('seller_name', sellerName);
-      fd.append('privacy_consent', 'true');
-      var res = await fetch(API_URL, { method: 'POST', body: fd });
-      var json = await res.json();
+      var json = await apiPost({
+        action: 'createBooking',
+        coach_id: wizCoachId,
+        start_datetime: wizSlotTime,
+        client_name: name,
+        client_surname: surname,
+        client_email: email,
+        client_phone: phone,
+        notes: notes,
+        seller_id: sellerId,
+        seller_name: sellerName,
+        privacy_consent: 'true'
+      });
       if (json.success) {
         document.getElementById('booking-modal').style.display = 'none';
         showAlert('Prenotazione confermata con successo per ' + name + ' ' + surname + '!', 'success');
