@@ -101,6 +101,57 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
   .coach-grid{grid-template-columns:1fr}
   .link-url{display:none}
 }
+
+/* ── Availability Calendar ────────────────────────────────── */
+.avail-section{margin-bottom:28px}
+.avail-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.avail-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.avail-tab{padding:8px 18px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid var(--gray-200);background:#fff;color:var(--gray-600);transition:all .2s;font-family:inherit}
+.avail-tab:hover{border-color:var(--orange);color:var(--orange)}
+.avail-tab.active{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 2px 8px rgba(229,119,17,.3)}
+.avail-stats{font-size:12px;color:var(--gray-400);font-weight:500}
+.avail-stats strong{color:var(--gray-700)}
+
+.avail-list{display:flex;flex-direction:column;gap:8px}
+.avail-row{background:#fff;border-radius:var(--radius);border:1px solid var(--gray-200);box-shadow:var(--shadow-sm);padding:12px 14px;transition:box-shadow .15s}
+.avail-row:hover{box-shadow:var(--shadow)}
+.avail-row-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.avail-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.avail-info{flex:1;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.avail-name{font-size:14px;font-weight:700;color:var(--gray-900)}
+.avail-slots-count{font-size:11px;font-weight:700;color:var(--green);background:#d1fae5;padding:2px 8px;border-radius:12px;white-space:nowrap}
+.avail-slots-count.low{color:#b45309;background:#fef3c7}
+.avail-slots-count.zero{color:#dc2626;background:#fee2e2}
+
+.avail-timeline-wrap{position:relative;margin-top:2px}
+.avail-hours{display:flex;justify-content:space-between;padding:0 0 3px;position:relative}
+.avail-hour-mark{font-size:9px;color:var(--gray-400);font-weight:600;text-align:center;width:0;position:relative}
+.avail-hour-mark span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.avail-timeline{position:relative;height:22px;background:var(--gray-100);border-radius:6px;overflow:hidden;border:1px solid var(--gray-200)}
+.avail-block{position:absolute;top:2px;bottom:2px;border-radius:4px;transition:opacity .15s}
+.avail-block.available{background:linear-gradient(135deg,#34d399,#10b981);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.avail-block.available:hover{opacity:.85}
+.avail-block-tooltip{display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--gray-800);color:#fff;font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;white-space:nowrap;z-index:10;pointer-events:none}
+.avail-block:hover .avail-block-tooltip{display:block}
+
+.avail-legend{display:flex;gap:16px;align-items:center;margin-top:12px;justify-content:center}
+.avail-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray-500);font-weight:500}
+.avail-legend-dot{width:12px;height:12px;border-radius:3px}
+.avail-legend-dot.green{background:linear-gradient(135deg,#34d399,#10b981)}
+.avail-legend-dot.gray{background:var(--gray-200);border:1px solid var(--gray-300)}
+
+@media(max-width:600px){
+  .avail-row-top{flex-wrap:wrap}
+  .avail-timeline-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .avail-timeline{min-width:500px}
+  .avail-hours{min-width:500px}
+  .avail-header{flex-direction:column;align-items:flex-start}
+}
+@media print{
+  .avail-block.available{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .avail-tab{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .avail-timeline{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
@@ -229,6 +280,24 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
         </div>
       </div>
 
+      <!-- AVAILABILITY CALENDAR -->
+      <div class="section avail-section">
+        <div class="section-title">Disponibilita coach — WUP Marzo 2026</div>
+        <div class="avail-header">
+          <div class="avail-tabs" id="avail-tabs">
+            <button class="avail-tab active" data-day="fri" onclick="switchAvailDay('fri',this)">Ven 13 Marzo</button>
+            <button class="avail-tab" data-day="sat" onclick="switchAvailDay('sat',this)">Sab 14 Marzo</button>
+            <button class="avail-tab" data-day="sun" onclick="switchAvailDay('sun',this)">Dom 15 Marzo</button>
+          </div>
+          <div class="avail-stats" id="avail-stats"></div>
+        </div>
+        <div class="avail-list" id="avail-list"></div>
+        <div class="avail-legend">
+          <div class="avail-legend-item"><div class="avail-legend-dot green"></div> Disponibile</div>
+          <div class="avail-legend-item"><div class="avail-legend-dot gray"></div> Occupato</div>
+        </div>
+      </div>
+
       <!-- COACH -->
       <div class="section">
         <div class="section-title">Dashboard personali coach (<span id="coach-count">…</span>)</div>
@@ -297,6 +366,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
     } finally {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('main').style.display = 'block';
+      renderAvailCalendar('fri');
     }
   }
 
@@ -406,6 +476,227 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
 
   function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function escJs(s){ return String(s).replace(/'/g,"\\'"); }
+
+  // ── Availability Calendar ──────────────────────────────────────────────────
+  var SLOTS = ['09:00','09:20','09:40','10:00','10:20','10:40','11:00','11:20','11:40','12:00','12:20','12:40','13:00','13:20','13:40','14:00','14:20','14:40','15:00','15:20','15:40','16:00','16:20','16:40','17:00','17:20','17:40'];
+  var HOUR_MARKS = ['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','17:55'];
+  var TIMELINE_START = 9*60; // 09:00 in minutes
+  var TIMELINE_END = 17*60+55; // 17:55 in minutes
+  var TIMELINE_SPAN = TIMELINE_END - TIMELINE_START; // 535 minutes
+
+  var COACHES_DATA = [
+    {id:'coach_001',name:'Giuseppe De Marco',cat:'Trading'},
+    {id:'coach_002',name:'Andrea Garagiola',cat:'Immobiliare'},
+    {id:'coach_003',name:'Colombo',cat:'Trading'},
+    {id:'coach_004',name:'Pasetto',cat:'Trading'},
+    {id:'coach_005',name:'Monza',cat:'Trading'},
+    {id:'coach_006',name:'Marras',cat:'Immobiliare'},
+    {id:'coach_007',name:'Pagliano',cat:'Trading'},
+    {id:'coach_009',name:'Ortelli',cat:'Mentor'},
+    {id:'coach_010',name:'Redi',cat:'Mentor'},
+    {id:'coach_011',name:'Fasciano',cat:'Trading'},
+    {id:'coach_013',name:'Sgambato',cat:'Trading'},
+    {id:'coach_014',name:'Acquistapace',cat:'Trading'},
+    {id:'coach_015',name:'Lovallo',cat:'Mindset'},
+    {id:'coach_016',name:'Rodriguez',cat:'Business'},
+    {id:'coach_017',name:'Crestan',cat:'Immobiliare'},
+    {id:'coach_018',name:'Migliaccio',cat:'Mentor'},
+    {id:'coach_024',name:'Bertacchi',cat:'Trading'},
+    {id:'coach_026',name:'Cuoco',cat:'Immobiliare'},
+    {id:'coach_027',name:'Lavorenti',cat:'Trading'},
+    {id:'coach_029',name:'Salvato',cat:'Mentor'}
+  ];
+
+  // name-to-id lookup
+  var NAME_TO_ID = {};
+  COACHES_DATA.forEach(function(c){
+    NAME_TO_ID[c.name] = c.id;
+    // Also map surname only
+    var parts = c.name.split(' ');
+    if(parts.length>1) NAME_TO_ID[parts[parts.length-1]] = c.id;
+    else NAME_TO_ID[parts[0]] = c.id;
+  });
+  // Special: "Andrea Garagiola" -> also "Garagiola"
+  NAME_TO_ID['Garagiola'] = 'coach_002';
+  NAME_TO_ID['De Marco'] = 'coach_001';
+
+  // Raw availability data parsed from busy_blocks_v5.txt
+  // Format: { coachId: [1/0 for each of 27 slots] } where 1=AVAILABLE, 0=BUSY
+  var AVAIL_DATA = {
+    fri: {
+      coach_001:[0,0,1,1,1,1,1,1,0,0,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,1,1],
+      coach_002:[1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,0,0,1],
+      coach_004:[1,1,1,1,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,0,0,1,1,1],
+      coach_005:[0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0],
+      coach_027:[0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1,0,0,0,0,1,1,1,1,1,0,0],
+      coach_006:[1,1,1,0,1,1,0,0,1,1,1,1,1,0,0,1,0,1,1,1,0,1,1,1,0,0,1],
+      coach_011:[1,1,1,0,0,1,1,1,1,1,0,0,0,0,1,1,1,1,0,1,1,1,1,0,1,1,1],
+      coach_013:[0,0,0,0,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,1,1,1,1,1,0,0,1],
+      coach_014:[1,1,1,1,0,0,1,1,1,0,0,0,1,1,1,0,1,1,1,0,0,1,1,1,1,0,0],
+      coach_024:[0,1,1,1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1],
+      coach_016:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],
+      coach_003:[0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1],
+      coach_007:[0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0],
+      coach_009:[1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,0],
+      coach_010:[1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,0],
+      coach_018:[1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1],
+      coach_029:[1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1],
+      coach_015:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1],
+      coach_017:[0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1],
+      coach_026:[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0]
+    },
+    sat: {
+      coach_001:[0,0,0,1,1,1,1,0,1,1,1,0,0,0,0,1,1,1,1,1,0,0,1,1,1,1,1],
+      coach_002:[1,1,1,1,0,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      coach_004:[1,1,1,1,0,1,1,1,0,1,1,1,0,0,1,1,0,0,0,0,0,1,1,0,0,1,1],
+      coach_005:[0,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1],
+      coach_027:[0,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1],
+      coach_006:[1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,1,1,1,1],
+      coach_011:[0,0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1],
+      coach_013:[1,1,1,1,1,1,0,0,1,1,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,1,0],
+      coach_014:[0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0],
+      coach_024:[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      coach_016:[0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      coach_003:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0],
+      coach_007:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0],
+      coach_009:[1,1,1,0,1,1,1,0,0,1,1,1,1,1,1,0,1,1,1,0,0,0,1,1,1,1,1],
+      coach_018:[1,1,1,0,1,1,1,0,0,1,1,1,1,1,1,0,1,1,1,0,0,0,1,1,1,1,1],
+      coach_010:[0,1,1,1,1,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1],
+      coach_029:[0,1,1,1,1,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1],
+      coach_015:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      coach_017:[0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1],
+      coach_026:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1]
+    },
+    sun: {
+      coach_001:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1],
+      coach_002:[1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,1,1,0,0,1,1],
+      coach_004:[0,0,1,1,1,0,0,0,0,1,1,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0],
+      coach_005:[0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,1,0,1,1,1,1,0],
+      coach_027:[0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,1,0,1,1,1,1,0],
+      coach_006:[1,1,1,1,1,0,0,0,0,1,1,0,0,0,1,1,1,1,1,0,0,1,1,0,0,0,1],
+      coach_011:[0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,1,1,1,1,1,1,0,0,1,1,1,1],
+      coach_013:[0,0,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,1,1,1,1,1,0,0,0,1],
+      coach_014:[0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,1,1,1,1,0],
+      coach_024:[1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1],
+      coach_016:[0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,1,1,1,1,1,0,1],
+      coach_003:[0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1],
+      coach_007:[0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1],
+      coach_009:[1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1],
+      coach_010:[0,0,1,1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,1,1],
+      coach_018:[0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1,1,1],
+      coach_029:[1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1],
+      coach_015:[0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      coach_017:[0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1],
+      coach_026:[0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    }
+  };
+
+  var currentAvailDay = 'fri';
+
+  function slotToMinutes(slot){
+    var p = slot.split(':');
+    return parseInt(p[0])*60 + parseInt(p[1]);
+  }
+
+  function getAvailBlocks(coachId, day){
+    var arr = AVAIL_DATA[day][coachId];
+    if(!arr) return [];
+    var blocks = [];
+    var i = 0;
+    while(i < SLOTS.length){
+      if(arr[i] === 1){
+        var start = i;
+        while(i < SLOTS.length && arr[i] === 1) i++;
+        var startMin = slotToMinutes(SLOTS[start]);
+        var endIdx = i - 1;
+        var endMin = slotToMinutes(SLOTS[endIdx]) + 15; // each slot is 15min
+        blocks.push({startMin:startMin, endMin:endMin, startLabel:SLOTS[start], endLabel:endMin < 600 ? '0'+Math.floor(endMin/60)+':'+('0'+endMin%60).slice(-2) : Math.floor(endMin/60)+':'+('0'+endMin%60).slice(-2), slotCount: endIdx - start + 1});
+      } else {
+        i++;
+      }
+    }
+    return blocks;
+  }
+
+  function formatEndTime(min){
+    var h = Math.floor(min/60);
+    var m = min%60;
+    return (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+  }
+
+  function renderAvailCalendar(day){
+    currentAvailDay = day;
+    var list = document.getElementById('avail-list');
+    if(!list) return;
+
+    // Build coach data for this day
+    var coachRows = [];
+    COACHES_DATA.forEach(function(c){
+      var arr = AVAIL_DATA[day][c.id];
+      if(!arr) return;
+      var availCount = arr.reduce(function(s,v){return s+v;},0);
+      var blocks = getAvailBlocks(c.id, day);
+      coachRows.push({id:c.id, name:c.name, cat:c.cat, availCount:availCount, blocks:blocks});
+    });
+
+    // Sort by available count descending
+    coachRows.sort(function(a,b){ return b.availCount - a.availCount; });
+
+    var totalSlots = coachRows.reduce(function(s,c){return s+c.availCount;},0);
+    document.getElementById('avail-stats').innerHTML = '<strong>' + coachRows.length + '</strong> coach &middot; <strong>' + totalSlots + '</strong> slot totali disponibili';
+
+    var html = '';
+    coachRows.forEach(function(c, idx){
+      var initials = c.name.split(' ').map(function(w){return w[0]||'';}).join('').toUpperCase().slice(0,2);
+      var color = AVATAR_COLORS[idx % AVATAR_COLORS.length];
+      var catClass = CAT_CLASS[c.cat] || 'cat-trading';
+      var countClass = c.availCount >= 15 ? '' : (c.availCount >= 8 ? ' low' : ' zero');
+
+      // Build timeline blocks
+      var blocksHtml = '';
+      c.blocks.forEach(function(b){
+        var leftPct = ((b.startMin - TIMELINE_START) / TIMELINE_SPAN * 100).toFixed(2);
+        var widthPct = ((b.endMin - b.startMin) / TIMELINE_SPAN * 100).toFixed(2);
+        var endLabel = formatEndTime(b.endMin);
+        blocksHtml += '<div class="avail-block available" style="left:'+leftPct+'%;width:'+widthPct+'%">' +
+          '<div class="avail-block-tooltip">'+b.startLabel+' - '+endLabel+' ('+b.slotCount+' slot)</div>' +
+          '</div>';
+      });
+
+      // Hour marks
+      var hoursHtml = '';
+      HOUR_MARKS.forEach(function(h){
+        var m = slotToMinutes(h);
+        var pct = ((m - TIMELINE_START) / TIMELINE_SPAN * 100).toFixed(2);
+        hoursHtml += '<div class="avail-hour-mark" style="left:'+pct+'%"><span>'+h.replace(/^0/,'')+'</span></div>';
+      });
+
+      html += '<div class="avail-row">' +
+        '<div class="avail-row-top">' +
+        '<div class="avail-avatar" style="background:'+color+'">'+escHtml(initials)+'</div>' +
+        '<div class="avail-info">' +
+        '<span class="avail-name">'+escHtml(c.name)+'</span>' +
+        '<span class="cat-tag '+catClass+'">'+c.cat+'</span>' +
+        '<span class="avail-slots-count'+countClass+'">'+c.availCount+'/27 slot</span>' +
+        '</div>' +
+        '</div>' +
+        '<div class="avail-timeline-wrap">' +
+        '<div class="avail-hours" style="position:relative;height:14px">'+hoursHtml+'</div>' +
+        '<div class="avail-timeline">'+blocksHtml+'</div>' +
+        '</div>' +
+        '</div>';
+    });
+
+    list.innerHTML = html;
+  }
+
+  window.switchAvailDay = function(day, btn){
+    currentAvailDay = day;
+    var tabs = document.querySelectorAll('.avail-tab');
+    tabs.forEach(function(t){t.classList.remove('active');});
+    if(btn) btn.classList.add('active');
+    renderAvailCalendar(day);
+  };
 
   init();
 })();
