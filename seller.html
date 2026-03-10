@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23E57711'/><text x='50' y='68' font-size='60' font-weight='bold' font-family='Arial' fill='white' text-anchor='middle'>W</text></svg>">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Wake Up Call — Dashboard Venditore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E57711;--orange-dark:#c96510;--green:#31B15C;--green-dark:#279a4f;
+  --red:#e53e3e;--red-dark:#c53030;--blue:#3b82f6;
+  --gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;
+  --gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;
+  --gray-800:#1f2937;--gray-900:#111827;
+  --radius-sm:8px;--radius:12px;--radius-lg:16px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
+  --shadow:0 4px 16px rgba(0,0,0,.10);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.14);
+}
+body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh}
+
+/* Header */
+.header{background:linear-gradient(135deg,var(--orange) 0%,var(--orange-dark) 100%);padding:16px 20px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.header-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.logo{color:#fff;font-size:24px;font-weight:800;letter-spacing:2px}
+.logo-sub{color:rgba(255,255,255,.8);font-size:11px;letter-spacing:.5px;text-transform:uppercase}
+.header-welcome{color:#fff;font-size:15px;font-weight:600;margin-left:auto;opacity:.9;text-align:right}
+.header-welcome small{display:block;color:rgba(255,255,255,.7);font-size:11px;font-weight:400}
+
+/* Filter bar */
+.filter-bar{background:#fff;border-bottom:1px solid var(--gray-200);padding:12px 20px;position:sticky;top:64px;z-index:90;box-shadow:var(--shadow-sm)}
+.filter-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.day-btn{padding:8px 16px;border:2px solid var(--gray-300);border-radius:var(--radius-sm);background:#fff;color:var(--gray-600);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}
+.day-btn:hover{border-color:var(--orange);color:var(--orange)}
+.day-btn.active{background:var(--orange);border-color:var(--orange);color:#fff}
+.search-input{padding:8px 12px;border:2px solid var(--gray-300);border-radius:var(--radius-sm);background:#fff;color:var(--gray-700);font-size:13px;font-weight:500;font-family:inherit;min-width:200px;flex:1;max-width:300px}
+.search-input:focus{outline:none;border-color:var(--orange)}
+.search-input::placeholder{color:var(--gray-400)}
+.coach-select{padding:8px 12px;border:2px solid var(--gray-300);border-radius:var(--radius-sm);background:#fff;color:var(--gray-700);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;min-width:160px}
+.coach-select:focus{outline:none;border-color:var(--orange)}
+.esito-filter{padding:8px 12px;border:2px solid var(--gray-300);border-radius:var(--radius-sm);background:#fff;color:var(--gray-700);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;min-width:160px}
+.esito-filter:focus{outline:none;border-color:var(--orange)}
+.filter-clear{padding:8px 14px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);background:var(--gray-50);color:var(--gray-500);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit}
+.filter-clear:hover{background:var(--gray-100);color:var(--gray-700)}
+
+/* Stats strip */
+.stats-strip{max-width:900px;margin:16px auto 0;padding:0 20px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.stat-card{background:#fff;border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow-sm);text-align:center}
+.stat-value{font-size:28px;font-weight:800;color:var(--orange)}
+.stat-value.green{color:var(--green)}
+.stat-value.red{color:var(--red)}
+.stat-value.blue{color:var(--blue)}
+.stat-value.amber{color:#b45309}
+.stat-value.muted{color:var(--gray-400)}
+.stat-label{font-size:11px;color:var(--gray-500);margin-top:2px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+
+/* Content */
+.content{max-width:900px;margin:16px auto 32px;padding:0 20px}
+.bookings-count{font-size:13px;color:var(--gray-500);font-weight:500;margin-bottom:12px;padding:4px 0}
+
+/* Booking card */
+.booking-card{background:#fff;border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-sm);margin-bottom:10px;border:1px solid var(--gray-200);transition:box-shadow .15s}
+.booking-card:hover{box-shadow:var(--shadow)}
+.card-top{display:flex;align-items:flex-start;gap:12px}
+.time-badge{background:var(--gray-900);color:#fff;border-radius:var(--radius-sm);padding:6px 12px;font-size:14px;font-weight:700;white-space:nowrap;line-height:1.3;text-align:center;min-width:72px}
+.time-badge small{display:block;font-size:10px;font-weight:400;opacity:.7;margin-top:1px}
+.card-body{flex:1;min-width:0}
+.card-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.coach-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.coach-name{font-size:13px;font-weight:600;color:var(--gray-700)}
+.client-name{font-size:15px;font-weight:700;color:var(--gray-900)}
+.client-phone{font-size:13px;color:var(--orange);font-weight:600;text-decoration:none}
+.client-phone:hover{text-decoration:underline}
+.client-email{font-size:12px;color:var(--gray-500)}
+.notes-text{font-size:12px;color:var(--gray-500);background:var(--gray-50);padding:6px 10px;border-radius:var(--radius-sm);margin-top:6px;border-left:3px solid var(--gray-300)}
+.esito-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+.esito-label{font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.esito-select{padding:5px 10px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;background:#fff;transition:border-color .15s}
+.esito-select:focus{outline:none;border-color:var(--orange)}
+.esito-select.venduto{border-color:var(--green);color:var(--green);background:#d1fae5}
+.esito-select.non_venduto{border-color:var(--red);color:var(--red);background:#fee2e2}
+.esito-select.in_trattativa{border-color:#f59e0b;color:#b45309;background:#fef3c7}
+.esito-saving{font-size:11px;color:var(--gray-400);font-style:italic}
+.sf-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.sf-label{font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.sf-checkbox{width:16px;height:16px;accent-color:var(--green);cursor:pointer}
+.sf-saving{font-size:11px;color:var(--gray-400);font-style:italic}
+.cancel-btn{margin-top:8px;padding:6px 14px;background:#fff;border:2px solid var(--red);color:var(--red);border-radius:var(--radius-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+.cancel-btn:hover{background:var(--red);color:#fff}
+
+/* Empty state */
+.empty{text-align:center;padding:48px 20px;color:var(--gray-400)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-text{font-size:15px;font-weight:500}
+
+/* Loading */
+.loading{text-align:center;padding:48px 20px}
+.spinner{width:36px;height:36px;border:3px solid var(--gray-200);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Alert */
+.alert{padding:14px 16px;border-radius:var(--radius);margin-bottom:16px;font-size:14px;font-weight:500}
+.alert.error{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+.alert.success{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+
+/* Error screen */
+.error-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.error-card{background:#fff;border-radius:var(--radius-lg);padding:40px 32px;text-align:center;max-width:380px;box-shadow:var(--shadow-lg)}
+.error-card h2{color:var(--red);margin:12px 0 8px;font-size:20px}
+.error-card p{color:var(--gray-500);font-size:14px}
+
+/* Modal overlay */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.modal{background:#fff;border-radius:var(--radius-lg);max-width:520px;width:100%;box-shadow:var(--shadow-lg);overflow:hidden;max-height:90vh;overflow-y:auto}
+.modal-header{background:var(--gray-900);padding:16px 20px;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;padding:4px 8px;line-height:1}
+.modal-close:hover{color:#fff}
+.modal-body{padding:20px}
+
+/* Booking wizard */
+.wizard-step{margin-bottom:20px}
+.wizard-step-title{font-size:13px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--orange);color:#fff;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-num.done{background:var(--green)}
+.step-num.disabled{background:var(--gray-300)}
+
+/* Coach selector */
+.coach-option{display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;margin-bottom:6px}
+.coach-option:hover{border-color:var(--orange);background:var(--gray-50)}
+.coach-option.selected{border-color:var(--orange);background:#fff7ed}
+.coach-option-name{font-size:14px;font-weight:600;color:var(--gray-800)}
+
+/* Day selector */
+.day-option{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;margin-right:6px;margin-bottom:6px;font-size:14px;font-weight:600;color:var(--gray-700)}
+.day-option:hover{border-color:var(--orange);color:var(--orange)}
+.day-option.selected{border-color:var(--orange);background:#fff7ed;color:var(--orange)}
+.day-option.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+
+/* Slot selector */
+.slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+.slot-btn{padding:10px 8px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);background:#fff;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit}
+.slot-btn:hover{border-color:var(--orange);background:var(--gray-50)}
+.slot-btn.selected{border-color:var(--orange);background:#fff7ed}
+.slot-btn .slot-time{font-size:15px;font-weight:700;color:var(--gray-800)}
+.slot-btn .slot-end{font-size:11px;color:var(--gray-400)}
+.slot-btn.booked{opacity:.35;cursor:not-allowed;pointer-events:none;background:var(--gray-100)}
+
+/* Form */
+.form-row{margin-bottom:12px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:4px}
+.form-input{width:100%;padding:10px 12px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--gray-800);transition:border-color .15s}
+.form-input:focus{outline:none;border-color:var(--orange)}
+.form-input::placeholder{color:var(--gray-400)}
+textarea.form-input{resize:vertical;min-height:60px}
+
+/* Book button */
+.book-submit{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s}
+.book-submit:hover{background:var(--green-dark)}
+.book-submit:disabled{background:var(--gray-300);cursor:not-allowed}
+
+/* Cancel modal */
+.cancel-modal-warning{background:#fef3c7;border:1px solid #fbbf24;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:#92400e;margin:12px 0}
+.cancel-modal-actions{display:flex;gap:10px;margin-top:16px}
+.cancel-modal-btn{flex:1;padding:12px;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:background .15s}
+.cancel-modal-btn.confirm{background:var(--red);color:#fff}
+.cancel-modal-btn.confirm:hover{background:var(--red-dark)}
+.cancel-modal-btn.abort{background:var(--gray-100);color:var(--gray-700)}
+.cancel-modal-btn.abort:hover{background:var(--gray-200)}
+
+/* FAB */
+.fab{position:fixed;bottom:24px;right:24px;z-index:150;display:flex;align-items:center;gap:8px;
+  background:var(--green);color:#fff;padding:14px 20px;border-radius:99px;border:none;
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 20px rgba(49,177,92,.4);transition:background .2s,transform .15s}
+.fab:hover{background:var(--green-dark);transform:translateY(-1px)}
+.fab svg{flex-shrink:0}
+
+/* Slots loading */
+.slots-loading{text-align:center;padding:16px;color:var(--gray-400);font-size:13px}
+.slots-empty{text-align:center;padding:16px;color:var(--gray-400);font-size:13px}
+
+/* Summary in wizard */
+.wizard-summary{background:var(--gray-50);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--gray-600);line-height:1.6}
+.wizard-summary strong{color:var(--gray-800)}
+
+@media(max-width:600px){
+  .stats-strip{grid-template-columns:repeat(3,1fr)}
+  .card-top{flex-wrap:wrap}
+  .filter-inner{gap:8px}
+  .search-input{min-width:100%;max-width:100%}
+  .slots-grid{grid-template-columns:repeat(3,1fr)}
+  .modal{max-height:95vh}
+  .fab{bottom:16px;right:16px;padding:12px 16px;font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<div id="error-screen" class="error-screen" style="display:none">
+  <div class="error-card">
+    <div style="font-size:48px">&#128274;</div>
+    <h2>Accesso negato</h2>
+    <p>Link non valido o credenziali mancanti. Contatta l'amministratore.</p>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+
+  <header class="header">
+    <div class="header-inner">
+      <div>
+        <div class="logo">Wake Up Call</div>
+        <div class="logo-sub">Dashboard Venditore</div>
+      </div>
+      <div class="header-welcome" id="header-welcome">
+        <span id="seller-greeting">...</span>
+        <small>Area personale</small>
+      </div>
+    </div>
+  </header>
+
+  <div class="filter-bar">
+    <div class="filter-inner">
+      <button class="day-btn active" data-date="all" onclick="setDayFilter(this,'all')">Tutti</button>
+      <button class="day-btn" data-date="2026-03-13" onclick="setDayFilter(this,'2026-03-13')">Ven 13</button>
+      <button class="day-btn" data-date="2026-03-14" onclick="setDayFilter(this,'2026-03-14')">Sab 14</button>
+      <button class="day-btn" data-date="2026-03-15" onclick="setDayFilter(this,'2026-03-15')">Dom 15</button>
+      <input type="text" class="search-input" id="search-input" placeholder="Cerca cliente..." oninput="onSearch()">
+      <select class="coach-select" id="coach-select" onchange="setCoachFilter(this.value)">
+        <option value="">Tutti i coach</option>
+      </select>
+      <select class="esito-filter" id="esito-filter" onchange="setEsitoFilter(this.value)">
+        <option value="">Tutti gli esiti</option>
+        <option value="__none__">Da definire</option>
+        <option value="IN_TRATTATIVA">Opportunità aperta</option>
+        <option value="VENDUTO">Chiusa vinta</option>
+        <option value="NON_VENDUTO">Chiusa persa</option>
+      </select>
+      <button class="filter-clear" onclick="clearFilters()">Reset</button>
+    </div>
+  </div>
+
+  <div class="stats-strip" id="stats-strip">
+    <div class="stat-card"><div class="stat-value" id="stat-total">--</div><div class="stat-label">Totale Sessioni</div></div>
+    <div class="stat-card"><div class="stat-value blue" id="stat-open">--</div><div class="stat-label">Opportunità aperta</div></div>
+    <div class="stat-card"><div class="stat-value green" id="stat-won">--</div><div class="stat-label">Chiusa vinta</div></div>
+    <div class="stat-card"><div class="stat-value red" id="stat-lost">--</div><div class="stat-label">Chiusa persa</div></div>
+    <div class="stat-card"><div class="stat-value muted" id="stat-pending">--</div><div class="stat-label">In attesa</div></div>
+  </div>
+
+  <div class="content">
+    <div id="alert-area"></div>
+    <div id="bookings-count" class="bookings-count"></div>
+    <div id="bookings-list"></div>
+  </div>
+
+</div>
+
+<!-- FAB Nuova Prenotazione -->
+<button class="fab" id="fab-book" style="display:none" onclick="openBookingModal()">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  Nuova Prenotazione
+</button>
+
+<!-- Modal Nuova Prenotazione -->
+<div id="booking-modal" class="modal-overlay" style="display:none" onclick="closeBookingModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span>Prenota una sessione per un cliente</span>
+      <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="booking-modal-body">
+      <!-- Step 1: Coach -->
+      <div class="wizard-step" id="step-coach">
+        <div class="wizard-step-title"><span class="step-num" id="step-num-1">1</span> Seleziona coach</div>
+        <div id="coach-list-container">
+          <div class="slots-loading"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin-bottom:8px"></div>Caricamento coach...</div>
+        </div>
+      </div>
+
+      <!-- Step 2: Day -->
+      <div class="wizard-step" id="step-day" style="display:none">
+        <div class="wizard-step-title"><span class="step-num" id="step-num-2">2</span> Seleziona giorno</div>
+        <div id="day-list-container">
+          <button class="day-option" data-date="2026-03-13" onclick="selectDay('2026-03-13',this)">Ven 13 Marzo</button>
+          <button class="day-option" data-date="2026-03-14" onclick="selectDay('2026-03-14',this)">Sab 14 Marzo</button>
+          <button class="day-option" data-date="2026-03-15" onclick="selectDay('2026-03-15',this)">Dom 15 Marzo</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Slot -->
+      <div class="wizard-step" id="step-slot" style="display:none">
+        <div class="wizard-step-title"><span class="step-num" id="step-num-3">3</span> Seleziona orario</div>
+        <div id="slots-container">
+          <div class="slots-loading">Seleziona un giorno...</div>
+        </div>
+      </div>
+
+      <!-- Step 4: Client form -->
+      <div class="wizard-step" id="step-form" style="display:none">
+        <div class="wizard-step-title"><span class="step-num" id="step-num-4">4</span> Dati cliente</div>
+        <div class="wizard-summary" id="booking-summary"></div>
+        <div class="form-row">
+          <label class="form-label">Nome *</label>
+          <input type="text" class="form-input" id="f-name" placeholder="Nome cliente" required>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Cognome *</label>
+          <input type="text" class="form-input" id="f-surname" placeholder="Cognome cliente" required>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Email *</label>
+          <input type="email" class="form-input" id="f-email" placeholder="email@esempio.com" required>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Telefono *</label>
+          <input type="tel" class="form-input" id="f-phone" placeholder="+39 333 1234567" required>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Note (opzionale)</label>
+          <textarea class="form-input" id="f-notes" placeholder="Eventuali note..."></textarea>
+        </div>
+        <button class="book-submit" id="book-submit-btn" onclick="submitBooking()">Conferma Prenotazione</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Cancellazione -->
+<div id="cancel-modal" class="modal-overlay" style="display:none" onclick="closeCancelModal(event)">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:420px">
+    <div class="modal-header">
+      <span>Conferma cancellazione</span>
+      <button class="modal-close" onclick="closeCancelModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:14px;color:var(--gray-700);margin-bottom:8px"><strong>Cliente:</strong> <span id="cancel-client"></span></div>
+      <div style="font-size:14px;color:var(--gray-700);margin-bottom:8px"><strong>Coach:</strong> <span id="cancel-coach"></span></div>
+      <div style="font-size:14px;color:var(--gray-700);margin-bottom:8px"><strong>Orario:</strong> <span id="cancel-time"></span></div>
+      <div class="cancel-modal-warning">Questa operazione e irreversibile. Il cliente e il coach riceveranno notifica della cancellazione.</div>
+      <div class="cancel-modal-actions">
+        <button class="cancel-modal-btn abort" onclick="closeCancelModal()">Annulla</button>
+        <button class="cancel-modal-btn confirm" id="cancel-confirm-btn" onclick="confirmCancelBooking()">Cancella prenotazione</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var API_URL = 'https://script.google.com/macros/s/AKfycbyRPpzCcN0h2kMyg6xKVMJroRZwQqYyxXtGmuaqtHh8BCVVQbHvT6DKjzJs0HrqFtyv/exec';
+  var AVATAR_COLORS = ['#E57711','#31B15C','#3b82f6','#8b5cf6','#ec4899','#f59e0b','#06b6d4','#10b981'];
+
+  var sellerId = '';
+  var sellerToken = '';
+  var sellerName = '';
+  var allBookings = [];
+  var allCoaches = [];
+  var currentDay = 'all';
+  var currentCoach = '';
+  var currentSearch = '';
+  var currentEsito = '';
+  var refreshTimer = null;
+
+  // Wizard state
+  var wizCoachId = '';
+  var wizCoachName = '';
+  var wizDate = '';
+  var wizSlotTime = '';
+  var wizSlotEnd = '';
+  var cancelTarget = null;
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  function init() {
+    var params = new URLSearchParams(window.location.search);
+    sellerId = params.get('id') || sessionStorage.getItem('wup_seller_id') || '';
+    sellerToken = params.get('token') || sessionStorage.getItem('wup_seller_token') || '';
+
+    if (!sellerId || !sellerToken) { showErrorScreen(); return; }
+    sessionStorage.setItem('wup_seller_id', sellerId);
+    sessionStorage.setItem('wup_seller_token', sellerToken);
+
+    authenticate();
+  }
+
+  async function authenticate() {
+    try {
+      var fd = new FormData();
+      fd.append('action', 'seller_auth');
+      fd.append('seller_id', sellerId);
+      fd.append('seller_token', sellerToken);
+      var res = await fetch(API_URL, { method: 'POST', body: fd });
+      var json = await res.json();
+      if (!json.success) { showErrorScreen(); return; }
+
+      var sellerData = (json.data && json.data.seller) ? json.data.seller : (json.seller || null);
+      sellerName = sellerData ? (sellerData.nome + ' ' + sellerData.cognome) : sellerId;
+      document.getElementById('seller-greeting').textContent = 'Ciao, ' + sellerName + '!';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('fab-book').style.display = 'flex';
+      loadBookings();
+      startAutoRefresh();
+    } catch(e) {
+      showErrorScreen();
+    }
+  }
+
+  function showErrorScreen() {
+    document.getElementById('error-screen').style.display = 'flex';
+  }
+
+  function startAutoRefresh() {
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(function() { loadBookings(); }, 60000);
+  }
+
+  // ── Load bookings ─────────────────────────────────────────────────────────
+  async function loadBookings() {
+    showLoading();
+    try {
+      var fd = new FormData();
+      fd.append('action', 'seller_bookings');
+      fd.append('seller_id', sellerId);
+      fd.append('seller_token', sellerToken);
+      var res = await fetch(API_URL, { method: 'POST', body: fd });
+      var json = await res.json();
+      if (!json.success) {
+        if (json.code === 'UNAUTHORIZED') { showErrorScreen(); return; }
+        showAlert('Errore: ' + (json.error || 'sconosciuto'), 'error');
+        hideLoading();
+        return;
+      }
+      var bookingsData = (json.data && json.data.bookings) ? json.data.bookings : (json.bookings || []);
+      allBookings = bookingsData.filter(function(b) { return b.status === 'CONFIRMED'; });
+      updateStats();
+      populateCoachSelect();
+      renderBookings();
+    } catch(e) {
+      showAlert('Errore di rete. Ricarica la pagina.', 'error');
+      hideLoading();
+    }
+  }
+
+  function updateStats() {
+    var tot = allBookings.length;
+    var open = allBookings.filter(function(b){ return b.esito === 'IN_TRATTATIVA'; }).length;
+    var won = allBookings.filter(function(b){ return b.esito === 'VENDUTO'; }).length;
+    var lost = allBookings.filter(function(b){ return b.esito === 'NON_VENDUTO'; }).length;
+    var pending = allBookings.filter(function(b){ return !b.esito; }).length;
+    document.getElementById('stat-total').textContent = tot;
+    document.getElementById('stat-open').textContent = open;
+    document.getElementById('stat-won').textContent = won;
+    document.getElementById('stat-lost').textContent = lost;
+    document.getElementById('stat-pending').textContent = pending;
+  }
+
+  // ── Filters ────────────────────────────────────────────────────────────────
+  window.setDayFilter = function(btn, date) {
+    document.querySelectorAll('.filter-bar .day-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentDay = date;
+    renderBookings();
+  };
+  window.setCoachFilter = function(coachId) {
+    currentCoach = coachId;
+    renderBookings();
+  };
+  window.setEsitoFilter = function(val) {
+    currentEsito = val;
+    renderBookings();
+  };
+  window.onSearch = function() {
+    currentSearch = document.getElementById('search-input').value.trim().toLowerCase();
+    renderBookings();
+  };
+  window.clearFilters = function() {
+    currentDay = 'all';
+    currentCoach = '';
+    currentSearch = '';
+    currentEsito = '';
+    document.querySelectorAll('.filter-bar .day-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelector('.filter-bar [data-date="all"]').classList.add('active');
+    document.getElementById('coach-select').value = '';
+    document.getElementById('search-input').value = '';
+    document.getElementById('esito-filter').value = '';
+    renderBookings();
+  };
+
+  function getFiltered() {
+    return allBookings.filter(function(b) {
+      if (currentDay !== 'all' && !b.start_datetime.startsWith(currentDay)) return false;
+      if (currentCoach && b.coach_id !== currentCoach) return false;
+      if (currentSearch) {
+        var fullName = ((b.client_name || '') + ' ' + (b.client_surname || '')).toLowerCase();
+        var email = (b.client_email || '').toLowerCase();
+        var phone = (b.client_phone || '').toLowerCase();
+        if (fullName.indexOf(currentSearch) === -1 && email.indexOf(currentSearch) === -1 && phone.indexOf(currentSearch) === -1) return false;
+      }
+      if (currentEsito === '__none__' && b.esito) return false;
+      if (currentEsito && currentEsito !== '__none__' && b.esito !== currentEsito) return false;
+      return true;
+    });
+  }
+
+  function populateCoachSelect() {
+    var sel = document.getElementById('coach-select');
+    var coaches = {};
+    allBookings.forEach(function(b) { coaches[b.coach_id] = b.coach_name; });
+    var opts = Object.keys(coaches).sort().map(function(id) {
+      return '<option value="' + id + '">' + escHtml(coaches[id]) + '</option>';
+    });
+    sel.innerHTML = '<option value="">Tutti i coach</option>' + opts.join('');
+  }
+
+  // ── Render bookings ────────────────────────────────────────────────────────
+  function renderBookings() {
+    var list = getFiltered();
+    list.sort(function(a, b) { return new Date(a.start_datetime) - new Date(b.start_datetime); });
+
+    var container = document.getElementById('bookings-list');
+    var countEl = document.getElementById('bookings-count');
+    countEl.textContent = list.length + ' sessioni mostrate';
+
+    if (!list.length) {
+      container.innerHTML = '<div class="empty"><div class="empty-icon">&#128237;</div><div class="empty-text">Nessuna sessione trovata</div></div>';
+      return;
+    }
+    container.innerHTML = list.map(renderCard).join('');
+  }
+
+  function renderCard(b) {
+    var start = new Date(b.start_datetime);
+    var end = new Date(b.end_datetime);
+    var ora = pad(start.getHours()) + ':' + pad(start.getMinutes());
+    var oraF = pad(end.getHours()) + ':' + pad(end.getMinutes());
+    var dateStr = start.toLocaleDateString('it-IT', { weekday:'short', day:'2-digit', month:'short' });
+
+    var initials = avatarInitials(b.coach_name);
+    var avatarColor = AVATAR_COLORS[Math.abs(hashStr(b.coach_id)) % AVATAR_COLORS.length];
+
+    var phone = b.client_phone ? '<a class="client-phone" href="tel:' + escHtml(b.client_phone) + '">' + escHtml(b.client_phone) + '</a>' : '<span style="color:var(--gray-400);font-size:13px">Nessun telefono</span>';
+    var email = b.client_email ? '<div class="client-email">' + escHtml(b.client_email) + '</div>' : '';
+    var notes = b.notes ? '<div class="notes-text">' + escHtml(b.notes) + '</div>' : '';
+
+    var esitoVal = (b.esito || '').toLowerCase();
+    var esitoClass = esitoVal === 'venduto' ? 'venduto' : esitoVal === 'non_venduto' ? 'non_venduto' : esitoVal === 'in_trattativa' ? 'in_trattativa' : '';
+    var esitoRow = '<div class="esito-row"><span class="esito-label">Esito:</span>' +
+      '<select class="esito-select ' + esitoClass + '" onchange="saveEsito(\'' + escId(b.booking_id) + '\',this)">' +
+      '<option value="">-- da definire</option>' +
+      '<option value="IN_TRATTATIVA"' + (b.esito==='IN_TRATTATIVA'?' selected':'') + '>Opportunità aperta</option>' +
+      '<option value="VENDUTO"' + (b.esito==='VENDUTO'?' selected':'') + '>Chiusa vinta</option>' +
+      '<option value="NON_VENDUTO"' + (b.esito==='NON_VENDUTO'?' selected':'') + '>Chiusa persa</option>' +
+      '</select><span class="esito-saving" id="esito-saving-' + escId(b.booking_id) + '"></span></div>';
+
+    var sfChecked = (b.salesforce_opportunity || '').toUpperCase() === 'TRUE';
+    var sfRow = '<div class="sf-row">' +
+      '<span class="sf-label">Salesforce:</span>' +
+      '<input type="checkbox" class="sf-checkbox" ' + (sfChecked ? 'checked' : '') +
+      ' onchange="saveSalesforceFlag(\'' + escId(b.booking_id) + '\',this)">' +
+      '<span class="sf-saving" id="sf-saving-' + escId(b.booking_id) + '"></span></div>';
+
+    var cancelAction = '<button class="cancel-btn" onclick="openCancelModal(\'' + escId(b.booking_id) + '\')">Cancella</button>';
+
+    return '<div class="booking-card">' +
+      '<div class="card-top">' +
+      '<div class="time-badge">' + ora + '<small>' + oraF + '</small><small style="margin-top:3px;font-size:9px">' + dateStr + '</small></div>' +
+      '<div class="card-body">' +
+      '<div class="card-row">' +
+      '<div class="coach-avatar" style="background:' + avatarColor + '">' + initials + '</div>' +
+      '<span class="coach-name">' + escHtml(b.coach_name) + '</span>' +
+      '</div>' +
+      '<div class="client-name">' + escHtml((b.client_name || '') + ' ' + (b.client_surname || '')) + '</div>' +
+      '<div style="margin-top:4px">' + phone + '</div>' +
+      email +
+      notes +
+      esitoRow +
+      sfRow +
+      cancelAction +
+      '</div>' +
+      '</div>' +
+      '</div>';
+  }
+
+  // ── Esito save ─────────────────────────────────────────────────────────────
+  window.saveEsito = async function(bookingId, sel) {
+    var esito = sel.value;
+    var saving = document.getElementById('esito-saving-' + bookingId);
+    if (saving) saving.textContent = 'salvataggio...';
+    sel.className = 'esito-select ' + (esito === 'VENDUTO' ? 'venduto' : esito === 'NON_VENDUTO' ? 'non_venduto' : esito === 'IN_TRATTATIVA' ? 'in_trattativa' : '');
+    try {
+      var fd = new FormData();
+      fd.append('action', 'seller_update_esito');
+      fd.append('seller_id', sellerId);
+      fd.append('seller_token', sellerToken);
+      fd.append('booking_id', bookingId);
+      fd.append('esito', esito);
+      var res = await fetch(API_URL, { method: 'POST', body: fd });
+      var json = await res.json();
+      if (saving) { saving.textContent = json.success ? 'salvato' : 'errore'; setTimeout(function(){ saving.textContent=''; }, 2000); }
+      var b = allBookings.find(function(x){ return x.booking_id === bookingId; });
+      if (b) b.esito = esito;
+      updateStats();
+    } catch(e) {
+      if (saving) { saving.textContent = 'errore rete'; setTimeout(function(){ saving.textContent=''; }, 2000); }
+    }
+  };
+
+  // ── Salesforce save ────────────────────────────────────────────────────────
+  window.saveSalesforceFlag = async function(bookingId, cb) {
+    var saving = document.getElementById('sf-saving-' + bookingId);
+    if (saving) saving.textContent = 'salvataggio...';
+    try {
+      var fd = new FormData();
+      fd.append('action', 'seller_update_salesforce');
+      fd.append('seller_id', sellerId);
+      fd.append('seller_token', sellerToken);
+      fd.append('booking_id', bookingId);
+      fd.append('salesforce', cb.checked ? 'true' : 'false');
+      var res = await fetch(API_URL, { method: 'POST', body: fd });
+      var json = await res.json();
+      if (saving) { saving.textContent = json.success ? 'salvato' : 'errore'; setTimeout(function(){ saving.textContent=''; }, 2000); }
+      var b = allBookings.find(function(x){ return x.booking_id === bookingId; });
+      if (b) b.salesforce_opportunity = cb.checked ? 'TRUE' : 'FALSE';
+    } catch(e) {
+      if (saving) { saving.textContent = 'errore rete'; setTimeout(function(){ saving.textContent=''; }, 2000); }
+    }
+  };
+
+  // ── Cancel booking ─────────────────────────────────────────────────────────
+  window.openCancelModal = function(bookingId) {
+    var b = allBookings.find(function(x){ return x.booking_id === bookingId; });
+    if (!b) return;
+    cancelTarget = b;
+    var start = new Date(b.start_datetime);
+    document.getElementById('cancel-client').textContent = (b.client_name || '') + ' ' + (b.client_surname || '');
+    document.getElementById('cancel-coach').textContent = b.coach_name || '';
+    document.getElementById('cancel-time').textContent = pad(start.getHours()) + ':' + pad(start.getMinutes()) + ' - ' + start.toLocaleDateString('it-IT', { weekday:'long', day:'2-digit', month:'long' });
+    document.getElementById('cancel-modal').style.display = 'flex';
+    document.getElementById('cancel-confirm-btn').disabled = false;
+    document.getElementById('cancel-confirm-btn').textContent = 'Cancella prenotazione';
+  };
+
+  window.closeCancelModal = function(e) {
+    if (e && e.target !== document.getElementById('cancel-modal')) return;
+    document.getElementById('cancel-modal').style.display = 'none';
+    cancelTarget = null;
+  };
+
+  window.confirmCancelBooking = async function() {
+    if (!cancelTarget) return;
+    var btn = document.getElementById('cancel-confirm-btn');
+    btn.disabled = true;
+    btn.textContent = 'Cancellazione...';
+    try {
+      var fd = new FormData();
+      fd.append('action', 'cancelBooking');
+      fd.append('booking_id', cancelTarget.booking_id);
+      fd.append('cancel_token', cancelTarget.cancel_token || '');
+      fd.append('seller_id', sellerId);
+      fd.append('seller_token', sellerToken);
+      var res = await fetch(API_URL, { method: 'POST', body: fd });
+      var json = await res.json();
+      document.getElementById('cancel-modal').style.display = 'none';
+      if (json.success) {
+        showAlert('Prenotazione cancellata con successo.', 'success');
+        await loadBookings();
+      } else {
+        showAlert('Errore: ' + (json.error || 'impossibile cancellare'), 'error');
+      }
+    } catch(e) {
+      document.getElementById('cancel-modal').style.display = 'none';
+      showAlert('Errore di rete durante la cancellazione.', 'error');
+    }
+    cancelTarget = null;
+  };
+
+  // ── Booking modal ──────────────────────────────────────────────────────────
+  window.openBookingModal = function() {
+    wizCoachId = '';
+    wizCoachName = '';
+    wizDate = '';
+    wizSlotTime = '';
+    wizSlotEnd = '';
+    document.getElementById('step-day').style.display = 'none';
+    document.getElementById('step-slot').style.display = 'none';
+    document.getElementById('step-form').style.display = 'none';
+    document.getElementById('f-name').value = '';
+    document.getElementById('f-surname').value = '';
+    document.getElementById('f-email').value = '';
+    document.getElementById('f-phone').value = '';
+    document.getElementById('f-notes').value = '';
+    document.getElementById('step-num-1').className = 'step-num';
+    document.getElementById('step-num-2').className = 'step-num disabled';
+    document.getElementById('step-num-3').className = 'step-num disabled';
+    document.getElementById('step-num-4').className = 'step-num disabled';
+    document.getElementById('booking-modal').style.display = 'flex';
+    loadCoaches();
+  };
+
+  window.closeBookingModal = function(e) {
+    if (e && e.target !== document.getElementById('booking-modal')) return;
+    document.getElementById('booking-modal').style.display = 'none';
+  };
+
+  async function loadCoaches() {
+    var container = document.getElementById('coach-list-container');
+    container.innerHTML = '<div class="slots-loading"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin-bottom:8px"></div>Caricamento coach...</div>';
+    try {
+      var fd = new FormData();
+      fd.append('action', 'listCoaches');
+      var res = await fetch(API_URL, { method: 'POST', body: fd });
+      var json = await res.json();
+      var coaches = (json.success && json.data && json.data.coaches) ? json.data.coaches : [];
+      if (!coaches.length) {
+        container.innerHTML = '<div class="slots-empty">Nessun coach disponibile</div>';
+        return;
+      }
+      allCoaches = coaches;
+      var html = '';
+      allCoaches.forEach(function(c) {
+        var initials = avatarInitials(c.name || c.nome || '');
+        var color = AVATAR_COLORS[Math.abs(hashStr(c.id || c.coach_id || '')) % AVATAR_COLORS.length];
+        var name = c.name || c.nome || '';
+        var id = c.id || c.coach_id || '';
+        html += '<div class="coach-option" data-coach-id="' + escHtml(id) + '" onclick="selectCoach(\'' + escHtml(id) + '\',\'' + escHtml(name).replace(/'/g,"\\'") + '\',this)">' +
+          '<div class="coach-avatar" style="background:' + color + '">' + initials + '</div>' +
+          '<div class="coach-option-name">' + escHtml(name) + '</div>' +
+          '</div>';
+      });
+      container.innerHTML = html;
+    } catch(e) {
+      container.innerHTML = '<div class="slots-empty">Errore caricamento coach</div>';
+    }
+  }
+
+  window.selectCoach = function(coachId, coachName, el) {
+    wizCoachId = coachId;
+    wizCoachName = coachName;
+    document.querySelectorAll('.coach-option').forEach(function(o){ o.classList.remove('selected'); });
+    el.classList.add('selected');
+    document.getElementById('step-num-1').className = 'step-num done';
+    document.getElementById('step-num-2').className = 'step-num';
+    document.getElementById('step-day').style.display = 'block';
+    // Reset subsequent steps
+    wizDate = '';
+    wizSlotTime = '';
+    document.querySelectorAll('#day-list-container .day-option').forEach(function(d){ d.classList.remove('selected'); });
+    document.getElementById('step-slot').style.display = 'none';
+    document.getElementById('step-form').style.display = 'none';
+    document.getElementById('step-num-3').className = 'step-num disabled';
+    document.getElementById('step-num-4').className = 'step-num disabled';
+  };
+
+  window.selectDay = function(date, el) {
+    wizDate = date;
+    wizSlotTime = '';
+    document.querySelectorAll('#day-list-container .day-option').forEach(function(d){ d.classList.remove('selected'); });
+    el.classList.add('selected');
+    document.getElementById('step-num-2').className = 'step-num done';
+    document.getElementById('step-num-3').className = 'step-num';
+    document.getElementById('step-slot').style.display = 'block';
+    document.getElementById('step-form').style.display = 'none';
+    document.getElementById('step-num-4').className = 'step-num disabled';
+    loadSlots();
+  };
+
+  async function loadSlots() {
+    var container = document.getElementById('slots-container');
+    container.innerHTML = '<div class="slots-loading"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin-bottom:8px"></div>Caricamento orari...</div>';
+    try {
+      var fd = new FormData();
+      fd.append('action', 'getAvailability');
+      fd.append('coach_id', wizCoachId);
+      fd.append('date', wizDate);
+      var res = await fetch(API_URL, { method: 'POST', body: fd });
+      var json = await res.json();
+      var slots = (json.success && json.data && json.data.slots) ? json.data.slots : [];
+      if (!slots.length) {
+        container.innerHTML = '<div class="slots-empty">Nessuno slot disponibile per questa data</div>';
+        return;
+      }
+      var html = '<div class="slots-grid">';
+      slots.forEach(function(s) {
+        var available = s.available !== false && s.status !== 'booked';
+        var timeLabel = s.time || s.start || '';
+        var endLabel = s.end_time || s.end || '';
+        html += '<div class="slot-btn' + (!available ? ' booked' : '') + '" onclick="selectSlot(\'' + escHtml(timeLabel) + '\',\'' + escHtml(endLabel) + '\',this)">' +
+          '<div class="slot-time">' + escHtml(timeLabel) + '</div>' +
+          (endLabel ? '<div class="slot-end">' + escHtml(endLabel) + '</div>' : '') +
+          '</div>';
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    } catch(e) {
+      container.innerHTML = '<div class="slots-empty">Errore caricamento slot</div>';
+    }
+  }
+
+  window.selectSlot = function(time, endTime, el) {
+    wizSlotTime = time;
+    wizSlotEnd = endTime;
+    document.querySelectorAll('.slot-btn').forEach(function(s){ s.classList.remove('selected'); });
+    el.classList.add('selected');
+    document.getElementById('step-num-3').className = 'step-num done';
+    document.getElementById('step-num-4').className = 'step-num';
+    document.getElementById('step-form').style.display = 'block';
+
+    // Build summary
+    var dayLabels = {'2026-03-13':'Venerdi 13 Marzo','2026-03-14':'Sabato 14 Marzo','2026-03-15':'Domenica 15 Marzo'};
+    var summary = '<strong>Coach:</strong> ' + escHtml(wizCoachName) + '<br>' +
+      '<strong>Giorno:</strong> ' + (dayLabels[wizDate] || wizDate) + '<br>' +
+      '<strong>Orario:</strong> ' + escHtml(wizSlotTime) + (wizSlotEnd ? ' - ' + escHtml(wizSlotEnd) : '');
+    document.getElementById('booking-summary').innerHTML = summary;
+
+    // Scroll to form
+    setTimeout(function() {
+      document.getElementById('step-form').scrollIntoView({ behavior:'smooth', block:'center' });
+    }, 100);
+  };
+
+  window.submitBooking = async function() {
+    var name = document.getElementById('f-name').value.trim();
+    var surname = document.getElementById('f-surname').value.trim();
+    var email = document.getElementById('f-email').value.trim();
+    var phone = document.getElementById('f-phone').value.trim();
+    var notes = document.getElementById('f-notes').value.trim();
+
+    if (!name || !surname || !email || !phone) {
+      showAlert('Compila tutti i campi obbligatori.', 'error');
+      return;
+    }
+
+    var btn = document.getElementById('book-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Prenotazione in corso...';
+
+    try {
+      var fd = new FormData();
+      fd.append('action', 'createBooking');
+      fd.append('coach_id', wizCoachId);
+      fd.append('start_datetime', wizSlotTime);
+      fd.append('client_name', name);
+      fd.append('client_surname', surname);
+      fd.append('client_email', email);
+      fd.append('client_phone', phone);
+      fd.append('notes', notes);
+      fd.append('seller_id', sellerId);
+      fd.append('seller_name', sellerName);
+      fd.append('privacy_consent', 'true');
+      var res = await fetch(API_URL, { method: 'POST', body: fd });
+      var json = await res.json();
+      if (json.success) {
+        document.getElementById('booking-modal').style.display = 'none';
+        showAlert('Prenotazione confermata con successo per ' + name + ' ' + surname + '!', 'success');
+        await loadBookings();
+      } else {
+        showAlert('Errore: ' + (json.error || 'impossibile prenotare'), 'error');
+        btn.disabled = false;
+        btn.textContent = 'Conferma Prenotazione';
+      }
+    } catch(e) {
+      showAlert('Errore di rete. Riprova.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Conferma Prenotazione';
+    }
+  };
+
+  // ── UI helpers ─────────────────────────────────────────────────────────────
+  function showLoading() {
+    document.getElementById('bookings-list').innerHTML = '<div class="loading"><div class="spinner"></div><div style="color:var(--gray-400);font-size:14px">Caricamento...</div></div>';
+  }
+  function hideLoading() {
+    document.getElementById('bookings-list').innerHTML = '';
+  }
+  function showAlert(msg, type) {
+    var el = document.getElementById('alert-area');
+    el.innerHTML = '<div class="alert ' + type + '">' + escHtml(msg) + '</div>';
+    setTimeout(function(){ el.innerHTML = ''; }, 5000);
+  }
+  function escHtml(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function escId(s) { return String(s).replace(/[^a-zA-Z0-9_-]/g,''); }
+  function pad(n) { return String(n).padStart(2,'0'); }
+  function avatarInitials(name) {
+    var parts = String(name).trim().split(' ');
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+    return String(name).substring(0,2).toUpperCase();
+  }
+  function hashStr(s) {
+    var h = 0;
+    for (var i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+    return h;
+  }
+
+  init();
+})();
+</script>
+<footer style="text-align:center;padding:16px 24px 24px;font-size:12px;color:#9ca3af;border-top:1px solid #f0f0f0;margin-top:16px;background:#f8f9fa;">
+  &copy; 2026 Alfio Bardolla Training Group &nbsp;&middot;&nbsp;
+  <a href="https://www.alfiobardolla.com/privacy-policy/" target="_blank" style="color:#9ca3af;text-decoration:underline;">Privacy Policy</a> &nbsp;&middot;&nbsp;
+  <a href="https://www.alfiobardolla.com/cookie-policy/" target="_blank" style="color:#9ca3af;text-decoration:underline;">Cookie Policy</a> &nbsp;&middot;&nbsp;
+  <a href="https://www.alfiobardolla.com/cookie-policy/#consenso" target="_blank" style="color:#9ca3af;text-decoration:underline;">Gestione Consenso Cookie</a>
+</footer>
+</body>
+</html>

@@ -162,6 +162,9 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
       <select class="coach-select" id="coach-select" onchange="setCoachFilter(this.value)">
         <option value="">Tutti i coach</option>
       </select>
+      <select class="coach-select" id="seller-select" onchange="setSellerFilter(this.value)">
+        <option value="">Tutti i venditori</option>
+      </select>
       <button class="filter-clear" onclick="clearFilters()">✕ Reset</button>
     </div>
   </div>
@@ -209,6 +212,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
   let allBookings = [];
   let currentDay = 'all';
   let currentCoach = '';
+  let currentSeller = '';
   let currentSearch = '';
   let cancelTarget = null;
 
@@ -242,6 +246,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
       allBookings = json.data.bookings || [];
       updateStats(json.data.meta);
       populateCoachSelect();
+      populateSellerSelect();
       renderBookings();
     } catch(e) {
       showAlert('Errore di rete. Ricarica la pagina.', 'error');
@@ -287,6 +292,10 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
     currentCoach = coachId;
     renderBookings();
   };
+  window.setSellerFilter = function(sellerName) {
+    currentSeller = sellerName;
+    renderBookings();
+  };
   window.onSearch = function() {
     currentSearch = document.getElementById('search-input').value.trim().toLowerCase();
     renderBookings();
@@ -294,10 +303,12 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
   window.clearFilters = function() {
     currentDay = 'all';
     currentCoach = '';
+    currentSeller = '';
     currentSearch = '';
     document.querySelectorAll('.day-btn').forEach(function(b){ b.classList.remove('active'); });
     document.querySelector('[data-date="all"]').classList.add('active');
     document.getElementById('coach-select').value = '';
+    document.getElementById('seller-select').value = '';
     document.getElementById('search-input').value = '';
     renderBookings();
   };
@@ -306,11 +317,13 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
     return allBookings.filter(function(b) {
       if (currentDay !== 'all' && !b.start_datetime.startsWith(currentDay)) return false;
       if (currentCoach && b.coach_id !== currentCoach) return false;
+      if (currentSeller && (b.seller_name || '') !== currentSeller) return false;
       if (currentSearch) {
         var fullName = ((b.client_name || '') + ' ' + (b.client_surname || '')).toLowerCase();
         var email = (b.client_email || '').toLowerCase();
         var phone = (b.client_phone || '').toLowerCase();
-        if (fullName.indexOf(currentSearch) === -1 && email.indexOf(currentSearch) === -1 && phone.indexOf(currentSearch) === -1) return false;
+        var seller = (b.seller_name || '').toLowerCase();
+        if (fullName.indexOf(currentSearch) === -1 && email.indexOf(currentSearch) === -1 && phone.indexOf(currentSearch) === -1 && seller.indexOf(currentSearch) === -1) return false;
       }
       return true;
     });
@@ -324,6 +337,16 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
       return '<option value="' + id + '">' + escHtml(coaches[id]) + '</option>';
     });
     sel.innerHTML = '<option value="">Tutti i coach</option>' + opts.join('');
+  }
+
+  function populateSellerSelect() {
+    const sel = document.getElementById('seller-select');
+    const sellers = {};
+    allBookings.forEach(function(b) { if (b.seller_name) sellers[b.seller_name] = true; });
+    const opts = Object.keys(sellers).sort().map(function(name) {
+      return '<option value="' + escHtml(name) + '">' + escHtml(name) + '</option>';
+    });
+    sel.innerHTML = '<option value="">Tutti i venditori</option>' + opts.join('');
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
@@ -388,6 +411,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
       '<div style="width:1px;height:14px;background:var(--gray-200)"></div>' +
       '<div class="coach-avatar" style="background:' + avatarColor + '">' + initials + '</div>' +
       '<span class="coach-name">' + escHtml(b.coach_name) + '</span>' +
+      (b.seller_name ? '<div style="width:1px;height:14px;background:var(--gray-200)"></div><span style="font-size:12px;color:var(--gray-500);font-weight:500">Venditore: ' + escHtml(b.seller_name) + '</span>' : '') +
       '</div>' +
       '<div class="client-name">' + escHtml(b.client_name + ' ' + b.client_surname) + '</div>' +
       '<div style="margin-top:4px">' + phone + '</div>' +

@@ -46,6 +46,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
 .link-icon.blue{background:#dbeafe;color:var(--blue)}
 .link-icon.purple{background:#ede9fe;color:var(--purple)}
 .link-icon.gray{background:var(--gray-100);color:var(--gray-500)}
+.link-icon.teal{background:#ccfbf1;color:var(--teal)}
 .link-body{flex:1;min-width:0}
 .link-name{font-size:14px;font-weight:700;color:var(--gray-900);margin-bottom:2px}
 .link-desc{font-size:12px;color:var(--gray-500)}
@@ -168,13 +169,27 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
           <div class="link-card-inner">
             <div class="link-icon green">💼</div>
             <div class="link-body">
-              <div class="link-name">Dashboard Venditori</div>
-              <div class="link-desc">Ricerca clienti, gestione esiti commerciali</div>
+              <div class="link-name">Dashboard Vendite (Admin)</div>
+              <div class="link-desc">Panoramica completa vendite — tutti i venditori, esiti, filtri</div>
               <div class="link-url" id="sales-url-text"></div>
             </div>
             <div class="link-actions">
               <button class="btn-copy" onclick="copyLink('sales-url')">Copia</button>
               <a class="btn-open" id="sales-url" href="#" target="_blank">↗ Apri</a>
+            </div>
+          </div>
+        </div>
+        <div class="link-card">
+          <div class="link-card-inner">
+            <div class="link-icon teal">👤</div>
+            <div class="link-body">
+              <div class="link-name">Dashboard Venditore</div>
+              <div class="link-desc">Dashboard personale per ogni venditore — accesso con link personale</div>
+              <div class="link-url" id="seller-url-text"></div>
+            </div>
+            <div class="link-actions">
+              <button class="btn-copy" onclick="copyLink('seller-url')">Copia</button>
+              <a class="btn-open" id="seller-url" href="#" target="_blank">↗ Apri</a>
             </div>
           </div>
         </div>
@@ -266,9 +281,11 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
     const adminUrl = BASE_DASH + 'admin.html?token=' + adminToken;
     const analyticsUrl = BASE_DASH + 'analytics.html?token=' + adminToken;
     const salesUrl = BASE_DASH + 'sales.html?token=' + adminToken;
+    const sellerUrl = BASE_DASH + 'seller.html?token=' + adminToken;
     setLink('admin-url', adminUrl);
     setLink('analytics-url', analyticsUrl);
     setLink('sales-url', salesUrl);
+    setLink('seller-url', sellerUrl);
 
     loadCoaches();
   }

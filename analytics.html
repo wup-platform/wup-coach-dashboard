@@ -271,6 +271,29 @@ tbody td{padding:12px 16px;font-size:13px;color:var(--gray-700)}
         </div>
       </div>
 
+      <!-- Tabella venditori -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Breakdown per Venditore</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px">#</th>
+                <th>Venditore</th>
+                <th>Totale</th>
+                <th>Opportunità aperta</th>
+                <th>Chiusa vinta</th>
+                <th>Chiusa persa</th>
+                <th>In attesa</th>
+              </tr>
+            </thead>
+            <tbody id="seller-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
     </div><!-- /dashboard -->
   </div>
 </div>
@@ -363,6 +386,7 @@ tbody td{padding:12px 16px;font-size:13px;color:var(--gray-700)}
     renderHourChart(confirmed);
     renderDayChart();
     renderConversions(confirmed);
+    renderSellerTable(confirmed);
     buildTableData(confirmed, cancelled);
     renderTable();
   }
@@ -712,6 +736,40 @@ tbody td{padding:12px 16px;font-size:13px;color:var(--gray-700)}
       '<div style="font-size:22px;font-weight:800;color:' + color + '">' + val + '</div>' +
       '<div style="font-size:10px;color:' + color + ';font-weight:600;margin-top:2px">' + label + '</div>' +
       '</div>';
+  }
+
+  // ── Seller table ────────────────────────────────────────────────────────
+  function renderSellerTable(confirmed) {
+    var sellerMap = {};
+    confirmed.forEach(function(b) {
+      var name = b.seller_name || '—';
+      if (!sellerMap[name]) sellerMap[name] = { total:0, it:0, v:0, nv:0, dd:0 };
+      sellerMap[name].total++;
+      if (b.esito === 'IN_TRATTATIVA') sellerMap[name].it++;
+      else if (b.esito === 'VENDUTO') sellerMap[name].v++;
+      else if (b.esito === 'NON_VENDUTO') sellerMap[name].nv++;
+      else sellerMap[name].dd++;
+    });
+    var rows = Object.entries(sellerMap).sort(function(a,b){ return b[1].total - a[1].total; });
+    var tbody = document.getElementById('seller-tbody');
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Nessun dato disponibile</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(function(e, i) {
+      var name = e[0]; var d = e[1];
+      var rank = i + 1;
+      var rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+      return '<tr>' +
+        '<td><span class="rank-badge ' + rankClass + '">' + rank + '</span></td>' +
+        '<td class="coach-name-cell">' + escHtml(name) + '</td>' +
+        '<td class="num-cell">' + d.total + '</td>' +
+        '<td class="num-cell" style="color:#b45309">' + d.it + '</td>' +
+        '<td class="num-cell green">' + d.v + '</td>' +
+        '<td class="num-cell red">' + d.nv + '</td>' +
+        '<td class="num-cell" style="color:var(--gray-500)">' + d.dd + '</td>' +
+        '</tr>';
+    }).join('');
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
