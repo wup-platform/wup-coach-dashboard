@@ -158,6 +158,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
       <button class="day-btn" data-date="2026-03-13" onclick="setDayFilter(this,'2026-03-13')">Ven 13 Mar</button>
       <button class="day-btn" data-date="2026-03-14" onclick="setDayFilter(this,'2026-03-14')">Sab 14 Mar</button>
       <button class="day-btn" data-date="2026-03-15" onclick="setDayFilter(this,'2026-03-15')">Dom 15 Mar</button>
+      <input type="text" class="coach-select" id="search-input" placeholder="🔍 Cerca cliente..." oninput="onSearch()" style="min-width:200px">
       <select class="coach-select" id="coach-select" onchange="setCoachFilter(this.value)">
         <option value="">Tutti i coach</option>
       </select>
@@ -208,6 +209,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
   let allBookings = [];
   let currentDay = 'all';
   let currentCoach = '';
+  let currentSearch = '';
   let cancelTarget = null;
 
   // ── Init ──────────────────────────────────────────────────────────────────
@@ -285,12 +287,18 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
     currentCoach = coachId;
     renderBookings();
   };
+  window.onSearch = function() {
+    currentSearch = document.getElementById('search-input').value.trim().toLowerCase();
+    renderBookings();
+  };
   window.clearFilters = function() {
     currentDay = 'all';
     currentCoach = '';
+    currentSearch = '';
     document.querySelectorAll('.day-btn').forEach(function(b){ b.classList.remove('active'); });
     document.querySelector('[data-date="all"]').classList.add('active');
     document.getElementById('coach-select').value = '';
+    document.getElementById('search-input').value = '';
     renderBookings();
   };
 
@@ -298,6 +306,12 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
     return allBookings.filter(function(b) {
       if (currentDay !== 'all' && !b.start_datetime.startsWith(currentDay)) return false;
       if (currentCoach && b.coach_id !== currentCoach) return false;
+      if (currentSearch) {
+        var fullName = ((b.client_name || '') + ' ' + (b.client_surname || '')).toLowerCase();
+        var email = (b.client_email || '').toLowerCase();
+        var phone = (b.client_phone || '').toLowerCase();
+        if (fullName.indexOf(currentSearch) === -1 && email.indexOf(currentSearch) === -1 && phone.indexOf(currentSearch) === -1) return false;
+      }
       return true;
     });
   }
