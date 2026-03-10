@@ -234,11 +234,6 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
         <div class="coach-grid" id="coach-grid"></div>
       </div>
 
-      <!-- VENDITORI -->
-      <div class="section">
-        <div class="section-title">Dashboard personali venditori (<span id="seller-count">…</span>)</div>
-        <div class="coach-grid" id="seller-grid"></div>
-      </div>
 
     </div>
   </div>
@@ -278,7 +273,6 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
     setLink('sales-url', salesUrl);
 
     loadCoaches();
-    loadSellers();
   }
 
   async function loadCoaches() {
@@ -328,52 +322,6 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
         '<div class="coach-name">' + escHtml(c.nome + ' ' + c.cognome) + '</div>' +
         '<div class="coach-meta">' + escHtml(c.email) + '</div>' +
         '<span class="cat-tag ' + catClass + '">' + cat + '</span>' +
-        '</div>' +
-        '</div>' +
-        '<div class="coach-actions">' + actions + '</div>' +
-        '</div>';
-    }).join('');
-  }
-
-  async function loadSellers() {
-    try {
-      const res = await fetch(API_URL + '?action=getSellerLinks&admin_token=' + encodeURIComponent(adminToken));
-      const json = await res.json();
-      if (!json.success) { renderSellers([]); return; }
-      renderSellers(json.data.sellers || []);
-    } catch(e) {
-      renderSellers([]);
-    }
-  }
-
-  function renderSellers(sellers) {
-    document.getElementById('seller-count').textContent = sellers.length;
-    const grid = document.getElementById('seller-grid');
-
-    if (!sellers.length) {
-      grid.innerHTML = '<p style="color:var(--gray-400);font-size:14px;padding:8px">Nessun venditore trovato. Esegui setupSellers() in Apps Script.</p>';
-      return;
-    }
-
-    sellers.sort(function(a,b){ return a.cognome.localeCompare(b.cognome); });
-    const SELLER_COLORS = ['#06b6d4','#8b5cf6','#ec4899','#f59e0b','#31B15C','#3b82f6','#E57711','#10b981','#ef4444','#6366f1'];
-
-    grid.innerHTML = sellers.map(function(s, i){
-      var initials = (s.nome[0]||'') + (s.cognome[0]||'');
-      var color = SELLER_COLORS[i % SELLER_COLORS.length];
-      var hasUrl = !!s.url;
-
-      var actions = hasUrl
-        ? '<button class="btn-copy" onclick="copyText(\'' + escJs(s.url) + '\',this)">Copia link</button>' +
-          '<a class="btn-open" href="' + escHtml(s.url) + '" target="_blank">↗ Apri</a>'
-        : '<span class="no-token">Token non generato</span>';
-
-      return '<div class="coach-card">' +
-        '<div class="coach-top">' +
-        '<div class="coach-avatar" style="background:' + color + '">' + escHtml(initials.toUpperCase()) + '</div>' +
-        '<div class="coach-info">' +
-        '<div class="coach-name">' + escHtml(s.nome + ' ' + s.cognome) + '</div>' +
-        '<div class="coach-meta">' + escHtml(s.email) + '</div>' +
         '</div>' +
         '</div>' +
         '<div class="coach-actions">' + actions + '</div>' +
