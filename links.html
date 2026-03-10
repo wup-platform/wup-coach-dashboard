@@ -164,6 +164,20 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
             </div>
           </div>
         </div>
+        <div class="link-card">
+          <div class="link-card-inner">
+            <div class="link-icon green">💼</div>
+            <div class="link-body">
+              <div class="link-name">Dashboard Venditori</div>
+              <div class="link-desc">Ricerca clienti, gestione esiti commerciali</div>
+              <div class="link-url" id="sales-url-text"></div>
+            </div>
+            <div class="link-actions">
+              <button class="btn-copy" onclick="copyLink('sales-url')">Copia</button>
+              <a class="btn-open" id="sales-url" href="#" target="_blank">↗ Apri</a>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- PUBBLICI -->
@@ -251,8 +265,10 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
     // Imposta link admin fissi
     const adminUrl = BASE_DASH + 'admin.html?token=' + adminToken;
     const analyticsUrl = BASE_DASH + 'analytics.html?token=' + adminToken;
+    const salesUrl = BASE_DASH + 'sales.html?token=' + adminToken;
     setLink('admin-url', adminUrl);
     setLink('analytics-url', analyticsUrl);
+    setLink('sales-url', salesUrl);
 
     loadCoaches();
   }
