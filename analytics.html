@@ -654,10 +654,10 @@ tbody td{padding:12px 16px;font-size:13px;color:var(--gray-700)}
       charts['chart-conversion'] = new Chart(document.getElementById('chart-conversion'), {
         type: 'doughnut',
         data: {
-          labels: ['Chiusa vinta','Chiusa persa','Opportunità aperta','Da definire'],
-          datasets: [{ data: [v, nv, it, dd],
-            backgroundColor: ['#31B15Ccc','#e53e3ecc','#f59e0bcc','#9ca3afcc'],
-            borderColor:     ['#31B15C','#e53e3e','#f59e0b','#9ca3af'],
+          labels: ['Opportunità aperta','Chiusa vinta','Chiusa persa','Da definire'],
+          datasets: [{ data: [it, v, nv, dd],
+            backgroundColor: ['#f59e0bcc','#31B15Ccc','#e53e3ecc','#9ca3afcc'],
+            borderColor:     ['#f59e0b','#31B15C','#e53e3e','#9ca3af'],
             borderWidth: 2, hoverOffset: 6 }]
         },
         options: { responsive:true, cutout:'65%',
