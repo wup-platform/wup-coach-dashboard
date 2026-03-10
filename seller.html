@@ -121,47 +121,6 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
 .modal-close:hover{color:#fff}
 .modal-body{padding:20px}
 
-/* Booking wizard */
-.wizard-step{margin-bottom:20px}
-.wizard-step-title{font-size:13px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.step-num{width:24px;height:24px;border-radius:50%;background:var(--orange);color:#fff;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
-.step-num.done{background:var(--green)}
-.step-num.disabled{background:var(--gray-300)}
-
-/* Coach selector */
-.coach-option{display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;margin-bottom:6px}
-.coach-option:hover{border-color:var(--orange);background:var(--gray-50)}
-.coach-option.selected{border-color:var(--orange);background:#fff7ed}
-.coach-option-name{font-size:14px;font-weight:600;color:var(--gray-800)}
-
-/* Day selector */
-.day-option{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;margin-right:6px;margin-bottom:6px;font-size:14px;font-weight:600;color:var(--gray-700)}
-.day-option:hover{border-color:var(--orange);color:var(--orange)}
-.day-option.selected{border-color:var(--orange);background:#fff7ed;color:var(--orange)}
-.day-option.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
-
-/* Slot selector */
-.slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
-.slot-btn{padding:10px 8px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);background:#fff;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit}
-.slot-btn:hover{border-color:var(--orange);background:var(--gray-50)}
-.slot-btn.selected{border-color:var(--orange);background:#fff7ed}
-.slot-btn .slot-time{font-size:15px;font-weight:700;color:var(--gray-800)}
-.slot-btn .slot-end{font-size:11px;color:var(--gray-400)}
-.slot-btn.booked{opacity:.35;cursor:not-allowed;pointer-events:none;background:var(--gray-100)}
-
-/* Form */
-.form-row{margin-bottom:12px}
-.form-label{display:block;font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:4px}
-.form-input{width:100%;padding:10px 12px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--gray-800);transition:border-color .15s}
-.form-input:focus{outline:none;border-color:var(--orange)}
-.form-input::placeholder{color:var(--gray-400)}
-textarea.form-input{resize:vertical;min-height:60px}
-
-/* Book button */
-.book-submit{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s}
-.book-submit:hover{background:var(--green-dark)}
-.book-submit:disabled{background:var(--gray-300);cursor:not-allowed}
-
 /* Cancel modal */
 .cancel-modal-warning{background:#fef3c7;border:1px solid #fbbf24;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:#92400e;margin:12px 0}
 .cancel-modal-actions{display:flex;gap:10px;margin-top:16px}
@@ -174,7 +133,7 @@ textarea.form-input{resize:vertical;min-height:60px}
 /* FAB */
 .fab{position:fixed;bottom:24px;right:24px;z-index:150;display:flex;align-items:center;gap:8px;
   background:var(--green);color:#fff;padding:14px 20px;border-radius:99px;border:none;
-  font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;
   box-shadow:0 4px 20px rgba(49,177,92,.4);transition:background .2s,transform .15s}
 .fab:hover{background:var(--green-dark);transform:translateY(-1px)}
 .fab svg{flex-shrink:0}
@@ -260,75 +219,11 @@ textarea.form-input{resize:vertical;min-height:60px}
 
 </div>
 
-<!-- FAB Nuova Prenotazione -->
-<button class="fab" id="fab-book" style="display:none" onclick="openBookingModal()">
+<!-- FAB Nuova Prenotazione — link alla landing page -->
+<a class="fab" id="fab-book" style="display:none" href="https://lp.alfiobardolla.com/prenotazione-wup/" target="_blank" rel="noopener">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
   Nuova Prenotazione
-</button>
-
-<!-- Modal Nuova Prenotazione -->
-<div id="booking-modal" class="modal-overlay" style="display:none" onclick="closeBookingModal(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <span>Prenota una sessione per un cliente</span>
-      <button class="modal-close" onclick="closeBookingModal()">&times;</button>
-    </div>
-    <div class="modal-body" id="booking-modal-body">
-      <!-- Step 1: Coach -->
-      <div class="wizard-step" id="step-coach">
-        <div class="wizard-step-title"><span class="step-num" id="step-num-1">1</span> Seleziona coach</div>
-        <div id="coach-list-container">
-          <div class="slots-loading"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin-bottom:8px"></div>Caricamento coach...</div>
-        </div>
-      </div>
-
-      <!-- Step 2: Day -->
-      <div class="wizard-step" id="step-day" style="display:none">
-        <div class="wizard-step-title"><span class="step-num" id="step-num-2">2</span> Seleziona giorno</div>
-        <div id="day-list-container">
-          <button class="day-option" data-date="2026-03-13" onclick="selectDay('2026-03-13',this)">Ven 13 Marzo</button>
-          <button class="day-option" data-date="2026-03-14" onclick="selectDay('2026-03-14',this)">Sab 14 Marzo</button>
-          <button class="day-option" data-date="2026-03-15" onclick="selectDay('2026-03-15',this)">Dom 15 Marzo</button>
-        </div>
-      </div>
-
-      <!-- Step 3: Slot -->
-      <div class="wizard-step" id="step-slot" style="display:none">
-        <div class="wizard-step-title"><span class="step-num" id="step-num-3">3</span> Seleziona orario</div>
-        <div id="slots-container">
-          <div class="slots-loading">Seleziona un giorno...</div>
-        </div>
-      </div>
-
-      <!-- Step 4: Client form -->
-      <div class="wizard-step" id="step-form" style="display:none">
-        <div class="wizard-step-title"><span class="step-num" id="step-num-4">4</span> Dati cliente</div>
-        <div class="wizard-summary" id="booking-summary"></div>
-        <div class="form-row">
-          <label class="form-label">Nome *</label>
-          <input type="text" class="form-input" id="f-name" placeholder="Nome cliente" required>
-        </div>
-        <div class="form-row">
-          <label class="form-label">Cognome *</label>
-          <input type="text" class="form-input" id="f-surname" placeholder="Cognome cliente" required>
-        </div>
-        <div class="form-row">
-          <label class="form-label">Email *</label>
-          <input type="email" class="form-input" id="f-email" placeholder="email@esempio.com" required>
-        </div>
-        <div class="form-row">
-          <label class="form-label">Telefono *</label>
-          <input type="tel" class="form-input" id="f-phone" placeholder="+39 333 1234567" required>
-        </div>
-        <div class="form-row">
-          <label class="form-label">Note (opzionale)</label>
-          <textarea class="form-input" id="f-notes" placeholder="Eventuali note..."></textarea>
-        </div>
-        <button class="book-submit" id="book-submit-btn" onclick="submitBooking()">Conferma Prenotazione</button>
-      </div>
-    </div>
-  </div>
-</div>
+</a>
 
 <!-- Modal Cancellazione -->
 <div id="cancel-modal" class="modal-overlay" style="display:none" onclick="closeCancelModal(event)">
@@ -366,19 +261,12 @@ textarea.form-input{resize:vertical;min-height:60px}
   var sellerToken = '';
   var sellerName = '';
   var allBookings = [];
-  var allCoaches = [];
   var currentDay = 'all';
   var currentCoach = '';
   var currentSearch = '';
   var currentEsito = '';
   var refreshTimer = null;
 
-  // Wizard state
-  var wizCoachId = '';
-  var wizCoachName = '';
-  var wizDate = '';
-  var wizSlotTime = '';
-  var wizSlotEnd = '';
   var cancelTarget = null;
 
   // ── Init ──────────────────────────────────────────────────────────────────
@@ -395,19 +283,22 @@ textarea.form-input{resize:vertical;min-height:60px}
   }
 
   async function authenticate() {
+    // Mostra subito UI (header, stats, filtri) con stato di caricamento
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('fab-book').style.display = 'flex';
+    showLoading();
     try {
       var res = await fetch(API_URL + '?action=seller_auth&seller_id=' + encodeURIComponent(sellerId) + '&seller_token=' + encodeURIComponent(sellerToken));
       var json = await res.json();
-      if (!json.success) { showErrorScreen(); return; }
+      if (!json.success) { document.getElementById('app').style.display = 'none'; showErrorScreen(); return; }
 
       var sellerData = (json.data && json.data.seller) ? json.data.seller : (json.seller || null);
       sellerName = sellerData ? (sellerData.nome + ' ' + sellerData.cognome) : sellerId;
       document.getElementById('seller-greeting').textContent = 'Ciao, ' + sellerName + '!';
-      document.getElementById('app').style.display = 'block';
-      document.getElementById('fab-book').style.display = 'flex';
       loadBookings();
       startAutoRefresh();
     } catch(e) {
+      document.getElementById('app').style.display = 'none';
       showErrorScreen();
     }
   }
@@ -654,190 +545,6 @@ textarea.form-input{resize:vertical;min-height:60px}
       showAlert('Errore di rete durante la cancellazione.', 'error');
     }
     cancelTarget = null;
-  };
-
-  // ── Booking modal ──────────────────────────────────────────────────────────
-  window.openBookingModal = function() {
-    wizCoachId = '';
-    wizCoachName = '';
-    wizDate = '';
-    wizSlotTime = '';
-    wizSlotEnd = '';
-    document.getElementById('step-day').style.display = 'none';
-    document.getElementById('step-slot').style.display = 'none';
-    document.getElementById('step-form').style.display = 'none';
-    document.getElementById('f-name').value = '';
-    document.getElementById('f-surname').value = '';
-    document.getElementById('f-email').value = '';
-    document.getElementById('f-phone').value = '';
-    document.getElementById('f-notes').value = '';
-    document.getElementById('step-num-1').className = 'step-num';
-    document.getElementById('step-num-2').className = 'step-num disabled';
-    document.getElementById('step-num-3').className = 'step-num disabled';
-    document.getElementById('step-num-4').className = 'step-num disabled';
-    document.getElementById('booking-modal').style.display = 'flex';
-    loadCoaches();
-  };
-
-  window.closeBookingModal = function(e) {
-    if (e && e.target !== document.getElementById('booking-modal')) return;
-    document.getElementById('booking-modal').style.display = 'none';
-  };
-
-  async function loadCoaches() {
-    var container = document.getElementById('coach-list-container');
-    container.innerHTML = '<div class="slots-loading"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin-bottom:8px"></div>Caricamento coach...</div>';
-    try {
-      var res = await fetch(API_URL + '?action=listCoaches');
-      var json = await res.json();
-      var coaches = (json.success && json.data && json.data.coaches) ? json.data.coaches : [];
-      if (!coaches.length) {
-        container.innerHTML = '<div class="slots-empty">Nessun coach disponibile</div>';
-        return;
-      }
-      allCoaches = coaches;
-      var html = '';
-      allCoaches.forEach(function(c) {
-        var initials = avatarInitials(c.name || c.nome || '');
-        var color = AVATAR_COLORS[Math.abs(hashStr(c.id || c.coach_id || '')) % AVATAR_COLORS.length];
-        var name = c.name || c.nome || '';
-        var id = c.id || c.coach_id || '';
-        html += '<div class="coach-option" data-coach-id="' + escHtml(id) + '" onclick="selectCoach(\'' + escHtml(id) + '\',\'' + escHtml(name).replace(/'/g,"\\'") + '\',this)">' +
-          '<div class="coach-avatar" style="background:' + color + '">' + initials + '</div>' +
-          '<div class="coach-option-name">' + escHtml(name) + '</div>' +
-          '</div>';
-      });
-      container.innerHTML = html;
-    } catch(e) {
-      container.innerHTML = '<div class="slots-empty">Errore caricamento coach</div>';
-    }
-  }
-
-  window.selectCoach = function(coachId, coachName, el) {
-    wizCoachId = coachId;
-    wizCoachName = coachName;
-    document.querySelectorAll('.coach-option').forEach(function(o){ o.classList.remove('selected'); });
-    el.classList.add('selected');
-    document.getElementById('step-num-1').className = 'step-num done';
-    document.getElementById('step-num-2').className = 'step-num';
-    document.getElementById('step-day').style.display = 'block';
-    // Reset subsequent steps
-    wizDate = '';
-    wizSlotTime = '';
-    document.querySelectorAll('#day-list-container .day-option').forEach(function(d){ d.classList.remove('selected'); });
-    document.getElementById('step-slot').style.display = 'none';
-    document.getElementById('step-form').style.display = 'none';
-    document.getElementById('step-num-3').className = 'step-num disabled';
-    document.getElementById('step-num-4').className = 'step-num disabled';
-  };
-
-  window.selectDay = function(date, el) {
-    wizDate = date;
-    wizSlotTime = '';
-    document.querySelectorAll('#day-list-container .day-option').forEach(function(d){ d.classList.remove('selected'); });
-    el.classList.add('selected');
-    document.getElementById('step-num-2').className = 'step-num done';
-    document.getElementById('step-num-3').className = 'step-num';
-    document.getElementById('step-slot').style.display = 'block';
-    document.getElementById('step-form').style.display = 'none';
-    document.getElementById('step-num-4').className = 'step-num disabled';
-    loadSlots();
-  };
-
-  async function loadSlots() {
-    var container = document.getElementById('slots-container');
-    container.innerHTML = '<div class="slots-loading"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin-bottom:8px"></div>Caricamento orari...</div>';
-    try {
-      var res = await fetch(API_URL + '?action=getAvailability&coach_id=' + encodeURIComponent(wizCoachId) + '&date=' + encodeURIComponent(wizDate));
-      var json = await res.json();
-      var slots = (json.success && json.data && json.data.slots) ? json.data.slots : [];
-      if (!slots.length) {
-        container.innerHTML = '<div class="slots-empty">Nessuno slot disponibile per questa data</div>';
-        return;
-      }
-      var html = '<div class="slots-grid">';
-      slots.forEach(function(s) {
-        var available = s.available !== false && s.status !== 'booked';
-        var timeLabel = s.time || s.start || '';
-        var endLabel = s.end_time || s.end || '';
-        html += '<div class="slot-btn' + (!available ? ' booked' : '') + '" onclick="selectSlot(\'' + escHtml(timeLabel) + '\',\'' + escHtml(endLabel) + '\',this)">' +
-          '<div class="slot-time">' + escHtml(timeLabel) + '</div>' +
-          (endLabel ? '<div class="slot-end">' + escHtml(endLabel) + '</div>' : '') +
-          '</div>';
-      });
-      html += '</div>';
-      container.innerHTML = html;
-    } catch(e) {
-      container.innerHTML = '<div class="slots-empty">Errore caricamento slot</div>';
-    }
-  }
-
-  window.selectSlot = function(time, endTime, el) {
-    wizSlotTime = time;
-    wizSlotEnd = endTime;
-    document.querySelectorAll('.slot-btn').forEach(function(s){ s.classList.remove('selected'); });
-    el.classList.add('selected');
-    document.getElementById('step-num-3').className = 'step-num done';
-    document.getElementById('step-num-4').className = 'step-num';
-    document.getElementById('step-form').style.display = 'block';
-
-    // Build summary
-    var dayLabels = {'2026-03-13':'Venerdi 13 Marzo','2026-03-14':'Sabato 14 Marzo','2026-03-15':'Domenica 15 Marzo'};
-    var summary = '<strong>Coach:</strong> ' + escHtml(wizCoachName) + '<br>' +
-      '<strong>Giorno:</strong> ' + (dayLabels[wizDate] || wizDate) + '<br>' +
-      '<strong>Orario:</strong> ' + escHtml(wizSlotTime) + (wizSlotEnd ? ' - ' + escHtml(wizSlotEnd) : '');
-    document.getElementById('booking-summary').innerHTML = summary;
-
-    // Scroll to form
-    setTimeout(function() {
-      document.getElementById('step-form').scrollIntoView({ behavior:'smooth', block:'center' });
-    }, 100);
-  };
-
-  window.submitBooking = async function() {
-    var name = document.getElementById('f-name').value.trim();
-    var surname = document.getElementById('f-surname').value.trim();
-    var email = document.getElementById('f-email').value.trim();
-    var phone = document.getElementById('f-phone').value.trim();
-    var notes = document.getElementById('f-notes').value.trim();
-
-    if (!name || !surname || !email || !phone) {
-      showAlert('Compila tutti i campi obbligatori.', 'error');
-      return;
-    }
-
-    var btn = document.getElementById('book-submit-btn');
-    btn.disabled = true;
-    btn.textContent = 'Prenotazione in corso...';
-
-    try {
-      var json = await apiPost({
-        action: 'createBooking',
-        coach_id: wizCoachId,
-        start_datetime: wizSlotTime,
-        client_name: name,
-        client_surname: surname,
-        client_email: email,
-        client_phone: phone,
-        notes: notes,
-        seller_id: sellerId,
-        seller_name: sellerName,
-        privacy_consent: 'true'
-      });
-      if (json.success) {
-        document.getElementById('booking-modal').style.display = 'none';
-        showAlert('Prenotazione confermata con successo per ' + name + ' ' + surname + '!', 'success');
-        await loadBookings();
-      } else {
-        showAlert('Errore: ' + (json.error || 'impossibile prenotare'), 'error');
-        btn.disabled = false;
-        btn.textContent = 'Conferma Prenotazione';
-      }
-    } catch(e) {
-      showAlert('Errore di rete. Riprova.', 'error');
-      btn.disabled = false;
-      btn.textContent = 'Conferma Prenotazione';
-    }
   };
 
   // ── UI helpers ─────────────────────────────────────────────────────────────
