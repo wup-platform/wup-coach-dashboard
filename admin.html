@@ -71,6 +71,13 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
 .client-phone{font-size:13px;color:var(--orange);font-weight:600;text-decoration:none}
 .client-phone:hover{text-decoration:underline}
 .notes-text{font-size:12px;color:var(--gray-500);background:var(--gray-50);padding:6px 10px;border-radius:var(--radius-sm);margin-top:6px;border-left:3px solid var(--gray-300)}
+.notes-row{margin-top:6px;display:flex;align-items:flex-start;gap:8px}
+.notes-input{flex:1;font-size:12px;font-family:inherit;padding:6px 10px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);background:var(--gray-50);color:var(--gray-700);resize:none;min-height:32px;transition:border-color .15s}
+.notes-input:focus{outline:none;border-color:var(--orange);background:#fff}
+.notes-save-btn{padding:6px 12px;background:var(--orange);color:#fff;border:none;border-radius:var(--radius-sm);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .15s}
+.notes-save-btn:hover{background:var(--orange-dark)}
+.notes-save-btn:disabled{opacity:.5;cursor:default}
+.notes-saving{font-size:11px;color:var(--gray-400);font-style:italic;align-self:center}
 .cancel-btn{margin-top:8px;padding:6px 14px;background:#fff;border:2px solid var(--red);color:var(--red);border-radius:var(--radius-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
 .cancel-btn:hover{background:var(--red);color:#fff}
 .cancelled-label{margin-top:8px;font-size:12px;color:var(--gray-400);font-style:italic}
@@ -380,7 +387,12 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
     const isCancelled = b.status === 'CANCELLED';
 
     const phone = b.client_phone ? '<a class="client-phone" href="tel:' + escHtml(b.client_phone) + '">' + escHtml(b.client_phone) + '</a>' : '<span style="color:var(--gray-400);font-size:13px">Nessun telefono</span>';
-    const notes = b.notes ? '<div class="notes-text">📝 ' + escHtml(b.notes) + '</div>' : '';
+    const notesRow = !isCancelled ? '<div class="notes-row">' +
+      '<span class="esito-label" style="padding-top:8px">Note:</span>' +
+      '<textarea class="notes-input" id="notes-input-' + escId(b.booking_id) + '" placeholder="Aggiungi note…" rows="1" oninput="autoGrow(this)">' + escHtml(b.notes || '') + '</textarea>' +
+      '<button class="notes-save-btn" onclick="saveNotes(\'' + escId(b.booking_id) + '\')">Salva</button>' +
+      '<span class="notes-saving" id="notes-saving-' + escId(b.booking_id) + '"></span>' +
+      '</div>' : (b.notes ? '<div class="notes-text">📝 ' + escHtml(b.notes) + '</div>' : '');
     const esitoVal = (b.esito || '').toLowerCase().replace('_','_');
     const esitoClass = esitoVal === 'venduto' ? 'venduto' : esitoVal === 'non_venduto' ? 'non_venduto' : esitoVal === 'in_trattativa' ? 'in_trattativa' : '';
     const esitoRow = !isCancelled ? '<div class="esito-row"><span class="esito-label">Esito:</span>' +
@@ -415,7 +427,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
       '</div>' +
       '<div class="client-name">' + escHtml(b.client_name + ' ' + b.client_surname) + '</div>' +
       '<div style="margin-top:4px">' + phone + '</div>' +
-      notes +
+      notesRow +
       esitoRow +
       sfRow +
       action +
@@ -494,6 +506,31 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
     } catch(e) {
       if (saving) { saving.textContent = '✗ errore rete'; setTimeout(function(){ saving.textContent=''; }, 2000); }
     }
+  };
+
+  window.saveNotes = async function(bookingId) {
+    const input = document.getElementById('notes-input-' + bookingId);
+    const saving = document.getElementById('notes-saving-' + bookingId);
+    if (!input) return;
+    const notes = input.value.trim();
+    if (saving) saving.textContent = 'salvataggio…';
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'updateBookingNotes', admin_token: adminToken, booking_id: bookingId, notes: notes })
+      });
+      const json = await res.json();
+      if (saving) { saving.textContent = json.success ? '✓' : '✗ errore'; setTimeout(function(){ saving.textContent=''; }, 2000); }
+      const b = allBookings.find(function(x){ return x.booking_id === bookingId; });
+      if (b) b.notes = notes;
+    } catch(e) {
+      if (saving) { saving.textContent = '✗ errore rete'; setTimeout(function(){ saving.textContent=''; }, 2000); }
+    }
+  };
+
+  window.autoGrow = function(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
   };
 
   function escId(s){ return String(s).replace(/[^a-zA-Z0-9_-]/g,''); }
