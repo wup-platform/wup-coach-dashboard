@@ -80,6 +80,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
 .notes-saving{font-size:11px;color:var(--gray-400);font-style:italic;align-self:center}
 .cancel-btn{margin-top:8px;padding:6px 14px;background:#fff;border:2px solid var(--red);color:var(--red);border-radius:var(--radius-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
 .cancel-btn:hover{background:var(--red);color:#fff}
+.cancel-btn[style*="green"]:hover{background:var(--green)!important;color:#fff!important}
 .cancelled-label{margin-top:8px;font-size:12px;color:var(--gray-400);font-style:italic}
 .esito-row{display:flex;align-items:center;gap:8px;margin-top:8px}
 .esito-label{font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
@@ -89,6 +90,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
 .esito-select.non_venduto{border-color:var(--red);color:var(--red);background:#fee2e2}
 .esito-select.in_trattativa{border-color:#f59e0b;color:#b45309;background:#fef3c7}
 .esito-select.non_presentato{border-color:#6b7280;color:#374151;background:#f3f4f6}
+.esito-select.da_definire{border-color:#7c3aed;color:#6b21a8;background:#f3e8ff}
 .esito-saving{font-size:11px;color:var(--gray-400);font-style:italic}
 .sf-row{display:flex;align-items:center;gap:8px;margin-top:6px}
 .sf-label{font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
@@ -211,6 +213,27 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
   </div>
 </div>
 
+<!-- Modal riattivazione -->
+<div id="reactivate-overlay" class="modal-overlay" style="display:none" onclick="closeReactivateModal(event)">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header" style="background:var(--green)">Riattiva prenotazione</div>
+    <div class="modal-body">
+      <div class="modal-detail"><strong>Cliente:</strong> <span id="react-client"></span></div>
+      <div class="modal-detail"><strong>Coach:</strong> <span id="react-coach"></span></div>
+      <div class="modal-detail"><strong>Orario originale:</strong> <span id="react-original-time"></span></div>
+      <hr style="margin:12px 0;border:none;border-top:1px solid var(--gray-200)">
+      <div style="margin-bottom:8px;font-weight:600;font-size:13px;color:var(--gray-700)">Scegli giorno e slot:</div>
+      <div id="react-day-btns" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>
+      <div id="react-slots" style="max-height:220px;overflow-y:auto"></div>
+      <div id="react-selected" style="margin-top:10px;font-size:13px;color:var(--green);font-weight:600;display:none"></div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel-abort" onclick="closeReactivateModal()">Annulla</button>
+        <button class="modal-btn" id="react-confirm-btn" style="background:var(--green);color:#fff" onclick="confirmReactivate()" disabled>Riattiva</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function() {
   const API_URL = 'https://script.google.com/macros/s/AKfycbyRPpzCcN0h2kMyg6xKVMJroRZwQqYyxXtGmuaqtHh8BCVVQbHvT6DKjzJs0HrqFtyv/exec';
@@ -218,6 +241,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
 
   let adminToken = '';
   let allBookings = [];
+  let allSellers = [];
   let currentDay = 'all';
   let currentCoach = '';
   let currentSeller = '';
@@ -252,6 +276,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
         return;
       }
       allBookings = json.data.bookings || [];
+      allSellers = json.data.sellers || [];
       updateStats(json.data.meta);
       populateCoachSelect();
       populateSellerSelect();
@@ -395,10 +420,11 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
       '<span class="notes-saving" id="notes-saving-' + escId(b.booking_id) + '"></span>' +
       '</div>' : (b.notes ? '<div class="notes-text">📝 ' + escHtml(b.notes) + '</div>' : '');
     const esitoVal = (b.esito || '').toLowerCase();
-    const esitoClass = esitoVal === 'venduto' ? 'venduto' : esitoVal === 'non_venduto' ? 'non_venduto' : esitoVal === 'in_trattativa' ? 'in_trattativa' : esitoVal === 'non_presentato' ? 'non_presentato' : '';
+    const esitoClass = esitoVal === 'venduto' ? 'venduto' : esitoVal === 'non_venduto' ? 'non_venduto' : esitoVal === 'in_trattativa' ? 'in_trattativa' : esitoVal === 'non_presentato' ? 'non_presentato' : esitoVal === 'da_definire' ? 'da_definire' : '';
     const esitoRow = !isCancelled ? '<div class="esito-row"><span class="esito-label">Esito:</span>' +
       '<select class="esito-select ' + esitoClass + '" onchange="saveEsito(\'' + escId(b.booking_id) + '\',this)">' +
-      '<option value="">— da definire</option>' +
+      '<option value="">— seleziona</option>' +
+      '<option value="DA_DEFINIRE"' + (b.esito==='DA_DEFINIRE'?' selected':'') + '>⏳ Da definire</option>' +
       '<option value="IN_TRATTATIVA"' + (b.esito==='IN_TRATTATIVA'?' selected':'') + '>🔄 Opportunità aperta</option>' +
       '<option value="VENDUTO"' + (b.esito==='VENDUTO'?' selected':'') + '>✅ Chiusa vinta</option>' +
       '<option value="NON_VENDUTO"' + (b.esito==='NON_VENDUTO'?' selected':'') + '>❌ Chiusa persa</option>' +
@@ -413,7 +439,8 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
       '<span class="sf-saving" id="sf-saving-' + escId(b.booking_id) + '"></span></div>' : '';
 
     const action = isCancelled
-      ? '<div class="cancelled-label">Cancellata' + (b.cancelled_at ? ' il ' + formatDateShort(new Date(b.cancelled_at)) : '') + '</div>'
+      ? '<div class="cancelled-label">Cancellata' + (b.cancelled_at ? ' il ' + formatDateShort(new Date(b.cancelled_at)) : '') + '</div>' +
+        '<button class="cancel-btn" style="border-color:var(--green);color:var(--green);margin-top:4px" onclick="openReactivateModal(' + JSON.stringify(b).replace(/"/g,'&quot;') + ')">↻ Riattiva</button>'
       : '<button class="cancel-btn" onclick="openModal(' + JSON.stringify(b).replace(/"/g,'&quot;') + ')">✕ Cancella</button>';
 
     return '<div class="booking-card' + (isCancelled ? ' cancelled' : '') + '">' +
@@ -422,10 +449,12 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
       '<div class="card-body">' +
       '<div class="card-row">' +
       '<span class="status-badge ' + (isCancelled ? 'cancelled' : 'confirmed') + '">' + (isCancelled ? 'Cancellata' : 'Confermata') + '</span>' +
+      (b.modalita === 'LIVESTREAM' ? '<span class="status-badge" style="background:#ede9fe;color:#5b21b6">&#128187; Livestream</span>' : b.modalita === 'LIVE' ? '<span class="status-badge" style="background:#dbeafe;color:#1e40af">&#127970; Live</span>' : '') +
+      (b.modalita === 'LIVESTREAM' && b.meet_link ? '<a href="' + escHtml(b.meet_link) + '" target="_blank" style="font-size:11px;color:#5b21b6;font-weight:600;text-decoration:underline">&#128279; Link Meet</a>' : '') +
       '<div style="width:1px;height:14px;background:var(--gray-200)"></div>' +
       '<div class="coach-avatar" style="background:' + avatarColor + '">' + initials + '</div>' +
       '<span class="coach-name">' + escHtml(b.coach_name) + '</span>' +
-      (b.seller_name ? '<div style="width:1px;height:14px;background:var(--gray-200)"></div><span style="font-size:12px;color:var(--gray-500);font-weight:500">Venditore: ' + escHtml(b.seller_name) + '</span>' : '') +
+      (!isCancelled ? '<div style="width:1px;height:14px;background:var(--gray-200)"></div><span style="font-size:12px;color:var(--gray-500);font-weight:500">Venditore: </span>' + buildSellerDropdown(b) : (b.seller_name ? '<div style="width:1px;height:14px;background:var(--gray-200)"></div><span style="font-size:12px;color:var(--gray-500);font-weight:500">Venditore: ' + escHtml(b.seller_name) + '</span>' : '')) +
       '</div>' +
       '<div class="client-name">' + escHtml(b.client_name + ' ' + b.client_surname) + '</div>' +
       '<div style="margin-top:4px">' + phone + '</div>' +
@@ -477,7 +506,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
     const esito = sel.value;
     const saving = document.getElementById('esito-saving-' + bookingId);
     if (saving) saving.textContent = 'salvataggio…';
-    sel.className = 'esito-select ' + (esito === 'VENDUTO' ? 'venduto' : esito === 'NON_VENDUTO' ? 'non_venduto' : esito === 'IN_TRATTATIVA' ? 'in_trattativa' : esito === 'NON_PRESENTATO' ? 'non_presentato' : '');
+    sel.className = 'esito-select ' + (esito === 'VENDUTO' ? 'venduto' : esito === 'NON_VENDUTO' ? 'non_venduto' : esito === 'IN_TRATTATIVA' ? 'in_trattativa' : esito === 'NON_PRESENTATO' ? 'non_presentato' : esito === 'DA_DEFINIRE' ? 'da_definire' : '');
     try {
       const res = await fetch(API_URL, {
         method: 'POST',
@@ -533,6 +562,150 @@ body{font-family:'Inter',sans-serif;background:var(--gray-100);color:var(--gray-
   window.autoGrow = function(el) {
     el.style.height = 'auto';
     el.style.height = el.scrollHeight + 'px';
+  };
+
+  // ── Riattivazione ────────────────────────────────────────────────────────
+  let reactivateTarget = null;
+  let reactivateSlot = null;
+
+  window.openReactivateModal = function(booking) {
+    reactivateTarget = booking;
+    reactivateSlot = null;
+    document.getElementById('react-client').textContent = booking.client_name + ' ' + booking.client_surname;
+    document.getElementById('react-coach').textContent = booking.coach_name;
+    var origStart = new Date(booking.start_datetime);
+    document.getElementById('react-original-time').textContent =
+      pad(origStart.getHours()) + ':' + pad(origStart.getMinutes()) + ' — ' +
+      origStart.toLocaleDateString('it-IT', { weekday:'long', day:'2-digit', month:'long' });
+    document.getElementById('react-selected').style.display = 'none';
+    document.getElementById('react-confirm-btn').disabled = true;
+    document.getElementById('react-slots').innerHTML = '<div style="color:var(--gray-400);font-size:13px;padding:12px;text-align:center">Seleziona un giorno</div>';
+    // Day buttons
+    var days = [
+      { date: '2026-03-13', label: 'Ven 13' },
+      { date: '2026-03-14', label: 'Sab 14' },
+      { date: '2026-03-15', label: 'Dom 15' }
+    ];
+    var btnsHtml = days.map(function(d) {
+      return '<button class="day-btn" onclick="loadReactivateSlots(\'' + d.date + '\',this)" style="font-size:12px;padding:6px 14px">' + d.label + '</button>';
+    }).join('');
+    document.getElementById('react-day-btns').innerHTML = btnsHtml;
+    document.getElementById('reactivate-overlay').style.display = 'flex';
+  };
+
+  window.closeReactivateModal = function(e) {
+    if (e && e.target !== document.getElementById('reactivate-overlay') && !e.target.classList.contains('cancel-abort')) return;
+    document.getElementById('reactivate-overlay').style.display = 'none';
+    reactivateTarget = null;
+    reactivateSlot = null;
+  };
+
+  window.loadReactivateSlots = async function(dateStr, btn) {
+    if (!reactivateTarget) return;
+    // Highlight day button
+    btn.parentElement.querySelectorAll('.day-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    reactivateSlot = null;
+    document.getElementById('react-selected').style.display = 'none';
+    document.getElementById('react-confirm-btn').disabled = true;
+    document.getElementById('react-slots').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    try {
+      var url = API_URL + '?action=getCoachSlots&admin_token=' + encodeURIComponent(adminToken) +
+        '&coach_id=' + encodeURIComponent(reactivateTarget.coach_id) + '&date=' + dateStr;
+      var res = await fetch(url);
+      var json = await res.json();
+      if (!json.success) { document.getElementById('react-slots').innerHTML = '<div style="color:var(--red);padding:12px;font-size:13px">Errore: ' + escHtml(json.error) + '</div>'; return; }
+      var slots = json.data.slots || [];
+      var available = slots.filter(function(s){ return s.status === 'available'; });
+      if (!available.length) {
+        document.getElementById('react-slots').innerHTML = '<div style="color:var(--gray-400);font-size:13px;padding:12px;text-align:center">Nessuno slot disponibile per questo giorno</div>';
+        return;
+      }
+      var html = available.map(function(s) {
+        var st = new Date(s.start);
+        var en = new Date(s.end);
+        var timeLabel = pad(st.getHours()) + ':' + pad(st.getMinutes()) + ' – ' + pad(en.getHours()) + ':' + pad(en.getMinutes());
+        return '<button class="day-btn" style="font-size:12px;padding:6px 14px" onclick="selectReactivateSlot(\'' +
+          s.start + '\',\'' + timeLabel + '\',this)">' + timeLabel + '</button>';
+      }).join('');
+      document.getElementById('react-slots').innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:6px;padding:4px">' + html + '</div>';
+    } catch(e) {
+      document.getElementById('react-slots').innerHTML = '<div style="color:var(--red);padding:12px;font-size:13px">Errore di rete</div>';
+    }
+  };
+
+  window.selectReactivateSlot = function(isoStart, label, btn) {
+    reactivateSlot = isoStart;
+    btn.parentElement.querySelectorAll('.day-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('react-selected').textContent = 'Nuovo orario: ' + label;
+    document.getElementById('react-selected').style.display = 'block';
+    document.getElementById('react-confirm-btn').disabled = false;
+  };
+
+  window.confirmReactivate = async function() {
+    if (!reactivateTarget || !reactivateSlot) return;
+    var btn = document.getElementById('react-confirm-btn');
+    btn.disabled = true;
+    btn.textContent = 'Riattivazione…';
+    try {
+      var res = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'reactivateBooking',
+          admin_token: adminToken,
+          booking_id: reactivateTarget.booking_id,
+          new_start_datetime: reactivateSlot
+        })
+      });
+      var json = await res.json();
+      document.getElementById('reactivate-overlay').style.display = 'none';
+      if (json.success) {
+        showAlert('Prenotazione riattivata con successo.', 'success');
+        await loadBookings();
+      } else {
+        showAlert('Errore: ' + (json.error || 'sconosciuto'), 'error');
+      }
+    } catch(e) {
+      document.getElementById('reactivate-overlay').style.display = 'none';
+      showAlert('Errore di rete durante la riattivazione.', 'error');
+    }
+    btn.textContent = 'Riattiva';
+    btn.disabled = false;
+    reactivateTarget = null;
+    reactivateSlot = null;
+  };
+
+  function buildSellerDropdown(b) {
+    var opts = '<option value="|">— nessuno</option>';
+    for (var i = 0; i < allSellers.length; i++) {
+      var s = allSellers[i];
+      var fullName = (s.nome + ' ' + s.cognome).trim();
+      var selected = (s.id === b.seller_id) ? ' selected' : '';
+      opts += '<option value="' + escHtml(s.id) + '|' + escHtml(fullName) + '"' + selected + '>' + escHtml(fullName) + '</option>';
+    }
+    return '<select class="esito-select" style="font-size:11px;min-width:140px" onchange="saveSeller(\'' + escId(b.booking_id) + '\',this)">' + opts + '</select>' +
+      '<span class="esito-saving" id="seller-saving-' + escId(b.booking_id) + '"></span>';
+  }
+
+  window.saveSeller = async function(bookingId, sel) {
+    var parts = sel.value.split('|');
+    var sellerId = parts[0] || '';
+    var sellerName = parts[1] || '';
+    var saving = document.getElementById('seller-saving-' + bookingId);
+    if (saving) saving.textContent = 'salvataggio…';
+    try {
+      var res = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'updateBookingSeller', admin_token: adminToken, booking_id: bookingId, seller_id: sellerId, seller_name: sellerName })
+      });
+      var json = await res.json();
+      if (saving) { saving.textContent = json.success ? '✓' : '✗ errore'; setTimeout(function(){ saving.textContent=''; }, 2000); }
+      var b = allBookings.find(function(x){ return x.booking_id === bookingId; });
+      if (b) { b.seller_id = sellerId; b.seller_name = sellerName; }
+    } catch(e) {
+      if (saving) { saving.textContent = '✗ errore rete'; setTimeout(function(){ saving.textContent=''; }, 2000); }
+    }
   };
 
   function escId(s){ return String(s).replace(/[^a-zA-Z0-9_-]/g,''); }
